@@ -15,4 +15,11 @@ public:
 	void RegisterMenus();
 
 	void OnWizardButtonClicked();
+
+	// Notification list example
+	void OnClickNotificationExample();
+	// Dialog message box example
+	void OnClickDialogMessageExample();
+	// Compound Widget
+	void OnClickCompoundWidgetExample();
 };
