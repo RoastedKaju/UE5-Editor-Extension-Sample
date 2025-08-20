@@ -88,7 +88,7 @@ void FCustomToolsEditorModule::RegisterMenus()
 				LOCTEXT("WizardLabel_ToolTip", "Compound Widget Tool Top"),
 				FSlateIcon(FAppStyle::GetAppStyleSetName(), "LevelEditor.GameSettings"),
 				FUIAction(FExecuteAction::CreateRaw(this, &FCustomToolsEditorModule::OnClickCompoundWidgetExample))
-				);
+			);
 		});
 
 		FToolMenuEntry Entry = FToolMenuEntry::InitComboButton
@@ -142,6 +142,29 @@ void FCustomToolsEditorModule::OnClickCompoundWidgetExample()
 		[
 			SNew(STextBlock)
 			.Text(LOCTEXT("Compound_Text", "Compound Widget Text."))
+		]
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(10)
+		[
+			SNew(SHorizontalBox) // To keep the size of button to content
+			+ SHorizontalBox::Slot()
+			.FillWidth(1.0f)
+			[
+				SNew(SButton)
+				.Text(LOCTEXT("Compound_FPS_Text", "Show FPS"))
+				.HAlign(HAlign_Center)
+				.OnClicked_Lambda([](){ GEngine->Exec(nullptr, TEXT("stat fps")); return FReply::Handled(); })
+			]
+			+ SHorizontalBox::Slot()
+			.FillWidth(1.0f)
+			.Padding(5.0f, 0.0f, 0.0f, 0.0f)
+			[
+				SNew(SButton)
+				.Text(LOCTEXT("Compound_FPS_Text", "Hide FPS"))
+				.HAlign(HAlign_Center)
+				.OnClicked_Lambda([](){ GEngine->Exec(nullptr, TEXT("stat none")); return FReply::Handled(); })
+			]
 		];
 
 	Window->SetContent(WindowContent);
