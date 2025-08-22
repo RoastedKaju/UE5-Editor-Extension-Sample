@@ -5,6 +5,7 @@
 #include "ToolMenu.h"
 #include "Framework/Notifications/NotificationManager.h"
 #include "Widgets/Notifications/SNotificationList.h"
+#include "CompoundWizard.h"
 
 #define LOCTEXT_NAMESPACE "CustomToolsEditorModule"
 
@@ -109,7 +110,17 @@ void FCustomToolsEditorModule::RegisterMenus()
 
 void FCustomToolsEditorModule::OnWizardButtonClicked()
 {
-	UE_LOG(CustomToolsEditorLog, Log, TEXT("Opening editor wizard example widget."));
+	TSharedRef<SWindow> Window = SNew(SWindow)
+		.Title(LOCTEXT("CompoundWizard_Title", "Compound Wizard Title"))
+		.ClientSize(FVector2D(1200, 200))
+		.SupportsMaximize(false)
+		.SupportsMinimize(false)
+		.SizingRule(ESizingRule::UserSized);
+
+	Window->SetContent(SNew(CompoundWizard));
+
+	// Make window modal (Blocks interaction with other windows until this one is closed)
+	FSlateApplication::Get().AddModalWindow(Window, FSlateApplication::Get().GetActiveTopLevelWindow());
 }
 
 void FCustomToolsEditorModule::OnClickNotificationExample()
