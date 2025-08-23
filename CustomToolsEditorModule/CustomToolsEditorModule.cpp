@@ -6,6 +6,7 @@
 #include "Framework/Notifications/NotificationManager.h"
 #include "Widgets/Notifications/SNotificationList.h"
 #include "CompoundWizard.h"
+#include "SimpleGlobalTabWindow.h"
 
 #define LOCTEXT_NAMESPACE "CustomToolsEditorModule"
 
@@ -40,7 +41,7 @@ void FCustomToolsEditorModule::RegisterMenus()
 		const FToolMenuEntry Entry = FToolMenuEntry::InitToolBarButton
 		(
 			TEXT("WizardButton"),
-			FUIAction(FExecuteAction::CreateRaw(this, &FCustomToolsEditorModule::OnWizardButtonClicked)),
+			FUIAction(FExecuteAction::CreateRaw(this, &FCustomToolsEditorModule::OnSimpleTabWindowClicked)),
 			LOCTEXT("WizardButton_Label", "Wizard Widget"),
 			LOCTEXT("WizardButton_ToolTip", "Opens up the wizard widget."),
 			FSlateIcon(FAppStyle::GetAppStyleSetName(), "LevelEditor.GameSettings")
@@ -121,6 +122,23 @@ void FCustomToolsEditorModule::OnWizardButtonClicked()
 
 	// Make window modal (Blocks interaction with other windows until this one is closed)
 	FSlateApplication::Get().AddModalWindow(Window, FSlateApplication::Get().GetActiveTopLevelWindow());
+}
+
+void FCustomToolsEditorModule::OnSimpleTabWindowClicked()
+{
+	const auto& Spawner = FOnSpawnTab::CreateLambda([](const FSpawnTabArgs& args)
+	{
+		return SNew(SDockTab)
+			.TabRole(ETabRole::NomadTab)
+			[
+				SNew(SimpleGlobalTabWindow)
+			];
+	});
+	FGlobalTabmanager::Get()->RegisterNomadTabSpawner("TabWizard", Spawner)
+	.SetDisplayName(LOCTEXT("SimpleTabWizard_Title", "Simple Nomad Tab"))
+	.SetMenuType(ETabSpawnerMenuType::Enabled);
+
+	FGlobalTabmanager::Get()->TryInvokeTab(FTabId("TabWizard"));
 }
 
 void FCustomToolsEditorModule::OnClickNotificationExample()

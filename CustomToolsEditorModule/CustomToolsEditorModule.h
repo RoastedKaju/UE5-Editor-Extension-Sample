@@ -14,7 +14,11 @@ public:
 
 	void RegisterMenus();
 
+	// When you click on the wizard icon button
 	void OnWizardButtonClicked();
+
+	// When you click on the settings icon button
+	void OnSimpleTabWindowClicked();
 
 	// Notification list example
 	void OnClickNotificationExample();

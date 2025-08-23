@@ -41,3 +41,5 @@ void CompoundWizard::Construct(const FArguments& args)
 		]
 	];
 }
+
+#undef LOCTEXT_NAMESPACE
