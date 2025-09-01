@@ -41,7 +41,8 @@ public class ExtendEditorManager : ModuleRules
 				"Blutility",
 				"EditorScriptingUtilities",
 				"UnrealEd",
-				"AssetTools"
+				"AssetTools",
+				"ContentBrowser"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
