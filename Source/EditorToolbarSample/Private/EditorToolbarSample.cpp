@@ -123,7 +123,7 @@ void FEditorToolbarSampleModule::ShowCompoundWidget()
 		.SupportsMinimize(false)
 		.SizingRule(ESizingRule::UserSized);
 
-	Window->SetContent(SNew(SimpleCompoundWidget));
+	Window->SetContent(SNew(SSimpleCompoundWidget));
 
 	FSlateApplication::Get().AddModalWindow(Window, FSlateApplication::Get().GetActiveTopLevelWindow());
 }

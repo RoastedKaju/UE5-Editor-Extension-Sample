@@ -8,10 +8,10 @@
 /**
  * 
  */
-class EDITORTOOLBARSAMPLE_API SimpleCompoundWidget : public SCompoundWidget
+class EDITORTOOLBARSAMPLE_API SSimpleCompoundWidget : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SimpleCompoundWidget) {}
+	SLATE_BEGIN_ARGS(SSimpleCompoundWidget) {}
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
