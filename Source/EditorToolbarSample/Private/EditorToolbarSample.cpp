@@ -2,6 +2,7 @@
 #include "ToolMenus.h"
 #include "Framework/Notifications/NotificationManager.h"
 #include "Widgets/Notifications/SNotificationList.h"
+#include "Widgets/SimpleCompoundWidget.h"
 
 #define LOCTEXT_NAMESPACE "FEditorToolbarSampleModule"
 
@@ -86,14 +87,14 @@ FNewToolMenuChoice FEditorToolbarSampleModule::CreateComboChoices()
 			LOCTEXT("LabelB", "Show Compound Widget"),
 			LOCTEXT("LabelB-ToolTip", "Compound Widget tooltip"),
 			FSlateIcon(),
-			FUIAction()
+			FUIAction(FExecuteAction::CreateRaw(this, &FEditorToolbarSampleModule::ShowCompoundWidget))
 		);
 		MenuBuilder.AddMenuEntry
 		(
 			LOCTEXT("LabelC", "Show Dialog Box"),
 			LOCTEXT("LabelC-ToolTip", "Dialog Box tooltip"),
 			FSlateIcon(),
-			FUIAction()
+			FUIAction(FExecuteAction::CreateRaw(this, &FEditorToolbarSampleModule::ShowDialogBox))
 		);
 	});
 	return Choice;
@@ -106,6 +107,25 @@ void FEditorToolbarSampleModule::ShowNotification()
 	Notification.ExpireDuration = 5.0f;
 
 	FSlateNotificationManager::Get().AddNotification(Notification);
+}
+
+void FEditorToolbarSampleModule::ShowDialogBox()
+{
+	FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("Dialog Box OK", "OK"), LOCTEXT("Dialog Box Title", "Title"));
+}
+
+void FEditorToolbarSampleModule::ShowCompoundWidget()
+{
+	const TSharedRef<SWindow> Window = SNew(SWindow)
+		.Title(LOCTEXT("Window Title", "Simple Compound Widget"))
+		.ClientSize(FVector2D(1200, 200))
+		.SupportsMaximize(false)
+		.SupportsMinimize(false)
+		.SizingRule(ESizingRule::UserSized);
+
+	Window->SetContent(SNew(SimpleCompoundWidget));
+
+	FSlateApplication::Get().AddModalWindow(Window, FSlateApplication::Get().GetActiveTopLevelWindow());
 }
 
 #undef LOCTEXT_NAMESPACE

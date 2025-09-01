@@ -17,4 +17,6 @@ protected:
 private:
     FNewToolMenuChoice CreateComboChoices();
     void ShowNotification();
+    void ShowDialogBox();
+    void ShowCompoundWidget();
 };
