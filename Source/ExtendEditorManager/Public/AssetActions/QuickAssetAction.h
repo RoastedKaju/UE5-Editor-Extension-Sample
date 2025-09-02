@@ -24,6 +24,9 @@ public:
 	UFUNCTION(CallInEditor)
 	void DeleteUnusedAssets();
 
+	UFUNCTION(CallInEditor)
+	void RenameAssets(const FString& NewName);
+
 	UFUNCTION()
 	void FixUpRedirectors();
 
