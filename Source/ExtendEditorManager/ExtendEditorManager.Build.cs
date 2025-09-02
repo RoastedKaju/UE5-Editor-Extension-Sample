@@ -25,8 +25,7 @@ public class ExtendEditorManager : ModuleRules
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Core",
-				// ... add other public dependencies that you statically link with here ...
+				"Core"
 			}
 			);
 			
@@ -42,8 +41,7 @@ public class ExtendEditorManager : ModuleRules
 				"EditorScriptingUtilities",
 				"UnrealEd",
 				"AssetTools",
-				"ContentBrowser"
-				// ... add private dependencies that you statically link with here ...	
+				"ContentBrowser",
 			}
 			);
 		
