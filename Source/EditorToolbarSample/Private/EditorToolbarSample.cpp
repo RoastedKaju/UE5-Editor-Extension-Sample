@@ -3,6 +3,7 @@
 #include "Framework/Notifications/NotificationManager.h"
 #include "Widgets/Notifications/SNotificationList.h"
 #include "Widgets/SimpleCompoundWidget.h"
+#include "Widgets/SimpleGlobalTabWidget.h"
 
 #define LOCTEXT_NAMESPACE "FEditorToolbarSampleModule"
 
@@ -96,6 +97,13 @@ FNewToolMenuChoice FEditorToolbarSampleModule::CreateComboChoices()
 			FSlateIcon(),
 			FUIAction(FExecuteAction::CreateRaw(this, &FEditorToolbarSampleModule::ShowDialogBox))
 		);
+		MenuBuilder.AddMenuEntry
+		(
+			LOCTEXT("LabelD", "Open Global Tab Window"),
+			LOCTEXT("LabelD-ToolTip", "Open Global Tab Window"),
+			FSlateIcon(),
+			FUIAction(FExecuteAction::CreateRaw(this, &FEditorToolbarSampleModule::ShowGlobalTabWidget))
+		);
 	});
 	return Choice;
 }
@@ -126,6 +134,24 @@ void FEditorToolbarSampleModule::ShowCompoundWidget()
 	Window->SetContent(SNew(SSimpleCompoundWidget));
 
 	FSlateApplication::Get().AddModalWindow(Window, FSlateApplication::Get().GetActiveTopLevelWindow());
+}
+
+void FEditorToolbarSampleModule::ShowGlobalTabWidget()
+{
+	const auto& Spawner = FOnSpawnTab::CreateLambda([](const FSpawnTabArgs& Args)
+	{
+		return SNew(SDockTab)
+			.TabRole(ETabRole::NomadTab)
+			[
+				SNew(SimpleGlobalTabWidget)
+			];
+	});
+
+	FGlobalTabmanager::Get()->RegisterNomadTabSpawner("SimpleGlobalTab", Spawner)
+	.SetDisplayName(LOCTEXT("SimpleGlobalTab", "Simple Nomad Tab"))
+	.SetMenuType(ETabSpawnerMenuType::Enabled);
+
+	FGlobalTabmanager::Get()->TryInvokeTab(FTabId("SimpleGlobalTab"));
 }
 
 #undef LOCTEXT_NAMESPACE

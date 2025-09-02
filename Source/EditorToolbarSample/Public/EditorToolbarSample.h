@@ -19,4 +19,5 @@ private:
     void ShowNotification();
     void ShowDialogBox();
     void ShowCompoundWidget();
+    void ShowGlobalTabWidget();
 };
