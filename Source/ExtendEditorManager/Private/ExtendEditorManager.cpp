@@ -1,10 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "ExtendEditorManager.h"
+
+#include "AssetToolsModule.h"
 #include "ContentBrowserModule.h"
 #include "EditorAssetLibrary.h"
 #include "ObjectTools.h"
 #include "DebugHeader.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 
 #define LOCTEXT_NAMESPACE "FExtendEditorManagerModule"
 
@@ -79,6 +82,9 @@ void FExtendEditorManagerModule::DeleteUnusedAssets()
 		return;
 	}
 
+	// Redirector fix before discovering unused assets
+	FixUpRedirectors();
+	
 	TArray<FAssetData> UnusedAssetsData;
 
 	for (const auto& AssetPathName : AssetsFoundList)
@@ -112,6 +118,32 @@ void FExtendEditorManagerModule::DeleteUnusedAssets()
 		DebugHelper::ShowDialogMessage(EAppMsgType::Ok, TEXT("There are no unused assets found."), true);
 	}
 	
+}
+
+void FExtendEditorManagerModule::FixUpRedirectors()
+{
+	TArray<UObjectRedirector*> RedirectorsToFix;
+
+	const FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+
+	FARFilter Filter;
+	Filter.bRecursivePaths = true;
+	Filter.PackagePaths.Emplace("/Game");
+	Filter.ClassPaths.Emplace(FTopLevelAssetPath(UObjectRedirector::StaticClass()->GetPathName()));
+	TArray<FAssetData> OutRedirectorsData;
+	
+	AssetRegistryModule.Get().GetAssets(Filter, OutRedirectorsData);
+
+	for (const auto& RedirectorData : OutRedirectorsData)
+	{
+		if (UObjectRedirector* RedirectorToFix = Cast<UObjectRedirector>(RedirectorData.GetAsset()))
+		{
+			RedirectorsToFix.Add(RedirectorToFix);
+		}
+	}
+
+	const FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>(TEXT("AssetTools"));
+	AssetToolsModule.Get().FixupReferencers(RedirectorsToFix);
 }
 
 #undef LOCTEXT_NAMESPACE

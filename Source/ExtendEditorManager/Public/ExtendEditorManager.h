@@ -19,4 +19,5 @@ private:
 	TSharedRef<FExtender> CustomCBMenuExtender(const TArray<FString>& SelectedPaths);
 	void AddContentBrowserMenuEntry(FMenuBuilder& MenuBuilder);
 	void DeleteUnusedAssets();
+	void FixUpRedirectors();
 };
