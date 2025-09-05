@@ -20,4 +20,5 @@ private:
 	void AddContentBrowserMenuEntry(FMenuBuilder& MenuBuilder);
 	void DeleteUnusedAssets();
 	void FixUpRedirectors();
+	void DeleteEmptyFolders();
 };

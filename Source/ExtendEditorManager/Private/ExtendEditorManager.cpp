@@ -58,6 +58,14 @@ void FExtendEditorManagerModule::AddContentBrowserMenuEntry(FMenuBuilder& MenuBu
 		FSlateIcon(),
 		FExecuteAction::CreateRaw(this, &FExtendEditorManagerModule::DeleteUnusedAssets)
 	);
+
+	MenuBuilder.AddMenuEntry
+	(
+		FText::FromString(TEXT("Delete Empty Folders")),
+		FText::FromString(TEXT("Tooltip for empty folders")),
+		FSlateIcon(),
+		FExecuteAction::CreateRaw(this, &FExtendEditorManagerModule::DeleteEmptyFolders)
+	);
 }
 
 void FExtendEditorManagerModule::DeleteUnusedAssets()
@@ -84,13 +92,16 @@ void FExtendEditorManagerModule::DeleteUnusedAssets()
 
 	// Redirector fix before discovering unused assets
 	FixUpRedirectors();
-	
+
 	TArray<FAssetData> UnusedAssetsData;
 
 	for (const auto& AssetPathName : AssetsFoundList)
 	{
 		// Skip the root folders
-		if (AssetPathName.Contains(TEXT("Collections")) || AssetsFoundList.Contains("Developers"))
+		if (AssetPathName.Contains(TEXT("Collections"))
+			|| AssetsFoundList.Contains("Developers")
+			|| AssetsFoundList.Contains("__ExternalActors__")
+			|| AssetsFoundList.Contains("__ExternalObjects__"))
 		{
 			continue;
 		}
@@ -117,7 +128,6 @@ void FExtendEditorManagerModule::DeleteUnusedAssets()
 	{
 		DebugHelper::ShowDialogMessage(EAppMsgType::Ok, TEXT("There are no unused assets found."), true);
 	}
-	
 }
 
 void FExtendEditorManagerModule::FixUpRedirectors()
@@ -131,7 +141,7 @@ void FExtendEditorManagerModule::FixUpRedirectors()
 	Filter.PackagePaths.Emplace("/Game");
 	Filter.ClassPaths.Emplace(FTopLevelAssetPath(UObjectRedirector::StaticClass()->GetPathName()));
 	TArray<FAssetData> OutRedirectorsData;
-	
+
 	AssetRegistryModule.Get().GetAssets(Filter, OutRedirectorsData);
 
 	for (const auto& RedirectorData : OutRedirectorsData)
@@ -144,6 +154,62 @@ void FExtendEditorManagerModule::FixUpRedirectors()
 
 	const FAssetToolsModule& AssetToolsModule = FModuleManager::LoadModuleChecked<FAssetToolsModule>(TEXT("AssetTools"));
 	AssetToolsModule.Get().FixupReferencers(RedirectorsToFix);
+}
+
+void FExtendEditorManagerModule::DeleteEmptyFolders()
+{
+	if (FolderPaths.Num() > 1)
+	{
+		DebugHelper::ShowDialogMessage(EAppMsgType::Ok, TEXT("You can only do this to one Folder."), true);
+		return;
+	}
+
+	FixUpRedirectors();
+
+	const TArray<FString> Entries = UEditorAssetLibrary::ListAssets(FolderPaths[0], true, true);
+
+	TArray<FString> DirectoriesToDelete;
+	FString EmptyFolderNames;
+	for (const auto& Entry : Entries)
+	{
+		if (UEditorAssetLibrary::DoesDirectoryExist(Entry))
+		{
+			// Skip the root folders
+			if (Entry.Contains(TEXT("Collections"))
+				|| Entry.Contains("Developers")
+				|| Entry.Contains("__ExternalActors__")
+				|| Entry.Contains("__ExternalObjects__"))
+			{
+				continue;
+			}
+
+			// It is important to not have the last '/' when you want to list out the directories
+			FString DirectoryPath = Entry;
+			DirectoryPath.RemoveFromEnd("/");
+			if (!UEditorAssetLibrary::DoesDirectoryHaveAssets(DirectoryPath, false))
+			{
+				DirectoriesToDelete.Add(Entry);
+
+				EmptyFolderNames.Append(TEXT("\n") + DirectoryPath);
+			}
+		}
+	}
+
+	if (DirectoriesToDelete.IsEmpty())
+	{
+		DebugHelper::ShowNotification(TEXT("No Empty Directories Found."));
+		return;
+	}
+
+	const EAppReturnType::Type DialogResult = DebugHelper::ShowDialogMessage(EAppMsgType::OkCancel, TEXT("Are You Sure You Want to Delete The Follow Folders?") + EmptyFolderNames, false);
+
+	if (DialogResult == EAppReturnType::Ok)
+	{
+		for (const auto& Directory : DirectoriesToDelete)
+		{
+			UEditorAssetLibrary::DeleteDirectory(Directory);
+		}
+	}
 }
 
 #undef LOCTEXT_NAMESPACE
