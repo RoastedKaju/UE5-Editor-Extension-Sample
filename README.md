@@ -1,8 +1,15 @@
-# Unreal Editor Extensions
-Extending the editor using tools and playing around with Slate framework.
+# 🧩 Unreal Editor Extensions
+This is a Practice/Sample Project which includes Extending the editor using tools and playing around with Slate framework.
 
-### Tool Menus
-Using the new 4.26+ Tool menus to add custom buttons in the editor's play toolbar.
+### 📦 Asset Actions
+- Renaming.
+- Adding Prefixes
 
-### Slate Wizard
-A New editor window created using slate.
+### 🛠️ Content Browser Menu Entries
+- Delete Unused Assets
+- Delete Empty Folders
+
+### 👨‍💻 Slate Widget Examples
+- Extending the Play Bar
+- Compound Widgets
+- Global Tab Manager
