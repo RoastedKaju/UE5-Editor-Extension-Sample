@@ -66,6 +66,14 @@ void FExtendEditorManagerModule::AddContentBrowserMenuEntry(FMenuBuilder& MenuBu
 		FSlateIcon(),
 		FExecuteAction::CreateRaw(this, &FExtendEditorManagerModule::DeleteEmptyFolders)
 	);
+
+	MenuBuilder.AddMenuEntry
+	(
+		FText::FromString(TEXT("Delete Unused Assets And Empty Folders")),
+		FText::FromString(TEXT("Tooltip for unused asset deletion")),
+		FSlateIcon(),
+		FExecuteAction::CreateRaw(this, &FExtendEditorManagerModule::DeleteUnusedAssetsAndFolders)
+	);
 }
 
 void FExtendEditorManagerModule::DeleteUnusedAssets()
@@ -84,7 +92,7 @@ void FExtendEditorManagerModule::DeleteUnusedAssets()
 		return;
 	}
 
-	const EAppReturnType::Type ConfirmResult = DebugHelper::ShowDialogMessage(EAppMsgType::YesNo, TEXT("Total Number of ") + FString::FromInt(AssetsFoundList.Num()) + TEXT(" Found\nWould You like to continue?"), false);
+	const EAppReturnType::Type ConfirmResult = DebugHelper::ShowDialogMessage(EAppMsgType::YesNo, TEXT("Total Number of ") + FString::FromInt(AssetsFoundList.Num()) + TEXT(" Assets Found\nWould You like to continue?"), false);
 	if (ConfirmResult == EAppReturnType::No)
 	{
 		return;
@@ -210,6 +218,12 @@ void FExtendEditorManagerModule::DeleteEmptyFolders()
 			UEditorAssetLibrary::DeleteDirectory(Directory);
 		}
 	}
+}
+
+void FExtendEditorManagerModule::DeleteUnusedAssetsAndFolders()
+{
+	DeleteUnusedAssets();
+	DeleteEmptyFolders();
 }
 
 #undef LOCTEXT_NAMESPACE

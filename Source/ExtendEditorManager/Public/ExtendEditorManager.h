@@ -21,4 +21,5 @@ private:
 	void DeleteUnusedAssets();
 	void FixUpRedirectors();
 	void DeleteEmptyFolders();
+	void DeleteUnusedAssetsAndFolders();
 };
