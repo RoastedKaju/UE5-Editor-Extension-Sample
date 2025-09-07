@@ -15,6 +15,7 @@ protected:
 	TArray<FString> FolderPaths;
 
 private:
+	// Content browser extension
 	void InitContentBrowserExtension();
 	TSharedRef<FExtender> CustomCBMenuExtender(const TArray<FString>& SelectedPaths);
 	void AddContentBrowserMenuEntry(FMenuBuilder& MenuBuilder);
@@ -22,4 +23,9 @@ private:
 	void FixUpRedirectors();
 	void DeleteEmptyFolders();
 	void DeleteUnusedAssetsAndFolders();
+	void AdvanceDelete();
+
+	// Editor Tab
+	void RegisterAdvancedDeletionEditorTab();
+	TSharedRef<SDockTab> OnSpawnAdvancedDeletionEditorTab(const FSpawnTabArgs& SpawnTabArgs);
 };

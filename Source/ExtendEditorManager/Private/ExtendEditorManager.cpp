@@ -14,6 +14,7 @@
 void FExtendEditorManagerModule::StartupModule()
 {
 	InitContentBrowserExtension();
+	RegisterAdvancedDeletionEditorTab();
 }
 
 void FExtendEditorManagerModule::ShutdownModule()
@@ -73,6 +74,14 @@ void FExtendEditorManagerModule::AddContentBrowserMenuEntry(FMenuBuilder& MenuBu
 		FText::FromString(TEXT("Tooltip for unused asset deletion")),
 		FSlateIcon(),
 		FExecuteAction::CreateRaw(this, &FExtendEditorManagerModule::DeleteUnusedAssetsAndFolders)
+	);
+
+	MenuBuilder.AddMenuEntry
+	(
+		FText::FromString(TEXT("Advanced Deletion")),
+		FText::FromString(TEXT("Nothing")),
+		FSlateIcon(),
+		FExecuteAction::CreateRaw(this, &FExtendEditorManagerModule::AdvanceDelete)
 	);
 }
 
@@ -224,6 +233,22 @@ void FExtendEditorManagerModule::DeleteUnusedAssetsAndFolders()
 {
 	DeleteUnusedAssets();
 	DeleteEmptyFolders();
+}
+
+void FExtendEditorManagerModule::AdvanceDelete()
+{
+	FGlobalTabmanager::Get()->TryInvokeTab(FName("AdvancedDeletion"));
+}
+
+void FExtendEditorManagerModule::RegisterAdvancedDeletionEditorTab()
+{
+	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(FName("AdvancedDeletion"), FOnSpawnTab::CreateRaw(this, &FExtendEditorManagerModule::OnSpawnAdvancedDeletionEditorTab))
+	.SetDisplayName(FText::FromString("Advanced Deletion"));
+}
+
+TSharedRef<SDockTab> FExtendEditorManagerModule::OnSpawnAdvancedDeletionEditorTab(const FSpawnTabArgs& SpawnTabArgs)
+{
+	return SNew(SDockTab).TabRole(NomadTab);
 }
 
 #undef LOCTEXT_NAMESPACE
