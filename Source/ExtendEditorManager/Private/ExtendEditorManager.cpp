@@ -8,6 +8,7 @@
 #include "ObjectTools.h"
 #include "DebugHeader.h"
 #include "AssetRegistry/AssetRegistryModule.h"
+#include "SlateWidgets/AdvancedDeletionWidget.h"
 
 #define LOCTEXT_NAMESPACE "FExtendEditorManagerModule"
 
@@ -248,7 +249,11 @@ void FExtendEditorManagerModule::RegisterAdvancedDeletionEditorTab()
 
 TSharedRef<SDockTab> FExtendEditorManagerModule::OnSpawnAdvancedDeletionEditorTab(const FSpawnTabArgs& SpawnTabArgs)
 {
-	return SNew(SDockTab).TabRole(NomadTab);
+	return SNew(SDockTab).TabRole(NomadTab)
+		[
+			SNew(SAdvancedDeletionWidget)
+			.TestString("I Am Passing Some Data")
+		];
 }
 
 #undef LOCTEXT_NAMESPACE
