@@ -11,9 +11,14 @@
 class EXTENDEDITORMANAGER_API SAdvancedDeletionWidget : public SCompoundWidget
 {
 	SLATE_BEGIN_ARGS(SAdvancedDeletionWidget) {}
-		SLATE_ARGUMENT(FString, TestString)
+		SLATE_ARGUMENT(TArray<TSharedPtr<FAssetData>>, AssetDataArray)
 	SLATE_END_ARGS()
 
 public:
 	void Construct(const FArguments& args);
+
+private:
+	TSharedRef<ITableRow> OnGenerateRowListView(TSharedPtr<FAssetData> AssetDataToDisplay, const TSharedRef<STableViewBase>& OwnerTable);
+	
+	TArray<TSharedPtr<FAssetData>> AssetsData;
 };

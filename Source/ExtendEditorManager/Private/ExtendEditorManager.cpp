@@ -252,8 +252,38 @@ TSharedRef<SDockTab> FExtendEditorManagerModule::OnSpawnAdvancedDeletionEditorTa
 	return SNew(SDockTab).TabRole(NomadTab)
 		[
 			SNew(SAdvancedDeletionWidget)
-			.TestString("I Am Passing Some Data")
+			.AssetDataArray(GetAllAssetDataInSelectedFolder())
 		];
+}
+
+TArray<TSharedPtr<FAssetData>> FExtendEditorManagerModule::GetAllAssetDataInSelectedFolder()
+{
+	TArray<TSharedPtr<FAssetData>> AvailableAssetsData;
+
+	TArray<FString> AssetsFoundList = UEditorAssetLibrary::ListAssets(FolderPaths[0]);
+	for (const auto& AssetPathName : AssetsFoundList)
+	{
+		// Skip the root folders
+		if (AssetPathName.Contains(TEXT("Collections"))
+			|| AssetsFoundList.Contains("Developers")
+			|| AssetsFoundList.Contains("__ExternalActors__")
+			|| AssetsFoundList.Contains("__ExternalObjects__"))
+		{
+			continue;
+		}
+
+		if (!UEditorAssetLibrary::DoesAssetExist(AssetPathName))
+		{
+			continue;
+		}
+
+		UE_LOG(LogTemp, Log, TEXT("Found Asset: %s"), *AssetPathName);
+		
+		FAssetData AssetData = UEditorAssetLibrary::FindAssetData(AssetPathName);
+		AvailableAssetsData.Add(MakeShared<FAssetData>(AssetData));
+	}
+	
+	return AvailableAssetsData;
 }
 
 #undef LOCTEXT_NAMESPACE

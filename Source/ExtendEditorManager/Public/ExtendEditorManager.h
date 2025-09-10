@@ -28,4 +28,5 @@ private:
 	// Editor Tab
 	void RegisterAdvancedDeletionEditorTab();
 	TSharedRef<SDockTab> OnSpawnAdvancedDeletionEditorTab(const FSpawnTabArgs& SpawnTabArgs);
+	TArray<TSharedPtr<FAssetData>> GetAllAssetDataInSelectedFolder();
 };
