@@ -57,6 +57,12 @@ TSharedRef<ITableRow> SAdvancedDeletionWidget::OnGenerateRowListView(TSharedPtr<
 		return SNew(STableRow<TSharedPtr<FAssetData>>, OwnerTable);
 	}
 
+	FSlateFontInfo ClassNameFontStyle = FCoreStyle::Get().GetFontStyle(FName("EmbossedText"));
+	ClassNameFontStyle.Size = 10.0f;
+
+	FSlateFontInfo AssetNameFontStyle = FCoreStyle::Get().GetFontStyle(FName("EmbossedText"));
+	AssetNameFontStyle.Size = 15.0f;
+
 	auto GeneratedRow = SNew(STableRow<TSharedPtr<FAssetData>>, OwnerTable)
 		[
 			SNew(SHorizontalBox)
@@ -69,14 +75,18 @@ TSharedRef<ITableRow> SAdvancedDeletionWidget::OnGenerateRowListView(TSharedPtr<
 				ConstructCheckBox(AssetDataToDisplay)
 			]
 			// Asset class name slot
-
+			+ SHorizontalBox::Slot()
+			.HAlign(HAlign_Center)
+			.VAlign(VAlign_Fill)
+			.FillWidth(0.35f)
+			[
+				ConstructTextBlock(AssetDataToDisplay->AssetClassPath.GetAssetName().ToString(), ClassNameFontStyle)
+			]
 			// Asset name slot
 			+ SHorizontalBox::Slot()
 			[
-				SNew(STextBlock)
-				.Text(FText::FromName(AssetDataToDisplay->AssetName))
+				ConstructTextBlock(AssetDataToDisplay->AssetName.ToString(), AssetNameFontStyle)
 			]
-
 			// Button slot
 		];
 
@@ -108,4 +118,14 @@ void SAdvancedDeletionWidget::OnCheckBoxStateChanged(ECheckBoxState NewState, TS
 	default:
 		break;
 	}
+}
+
+TSharedRef<STextBlock> SAdvancedDeletionWidget::ConstructTextBlock(const FString& TextToDisplay, const FSlateFontInfo& Font)
+{
+	TSharedRef<STextBlock> TextBlock = SNew(STextBlock)
+		.Text(FText::FromString(TextToDisplay))
+		.Font(Font)
+		.ColorAndOpacity(FColor::White);
+
+	return TextBlock;
 }

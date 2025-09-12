@@ -21,6 +21,8 @@ private:
 	TSharedRef<ITableRow> OnGenerateRowListView(TSharedPtr<FAssetData> AssetDataToDisplay, const TSharedRef<STableViewBase>& OwnerTable);
 	TSharedRef<SCheckBox> ConstructCheckBox(const TSharedPtr<FAssetData>& AssetDataToDisplay);
 	void OnCheckBoxStateChanged(ECheckBoxState NewState, TSharedPtr<FAssetData> AssetData);
+
+	TSharedRef<STextBlock> ConstructTextBlock(const FString& TextToDisplay, const FSlateFontInfo& Font);
 	
 	TArray<TSharedPtr<FAssetData>> AssetsData;
 };
