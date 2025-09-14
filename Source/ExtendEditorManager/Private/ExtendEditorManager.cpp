@@ -244,7 +244,7 @@ void FExtendEditorManagerModule::AdvanceDelete()
 void FExtendEditorManagerModule::RegisterAdvancedDeletionEditorTab()
 {
 	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(FName("AdvancedDeletion"), FOnSpawnTab::CreateRaw(this, &FExtendEditorManagerModule::OnSpawnAdvancedDeletionEditorTab))
-	.SetDisplayName(FText::FromString("Advanced Deletion"));
+	                        .SetDisplayName(FText::FromString("Advanced Deletion"));
 }
 
 TSharedRef<SDockTab> FExtendEditorManagerModule::OnSpawnAdvancedDeletionEditorTab(const FSpawnTabArgs& SpawnTabArgs)
@@ -278,12 +278,23 @@ TArray<TSharedPtr<FAssetData>> FExtendEditorManagerModule::GetAllAssetDataInSele
 		}
 
 		UE_LOG(LogTemp, Log, TEXT("Found Asset: %s"), *AssetPathName);
-		
+
 		FAssetData AssetData = UEditorAssetLibrary::FindAssetData(AssetPathName);
 		AvailableAssetsData.Add(MakeShared<FAssetData>(AssetData));
 	}
-	
+
 	return AvailableAssetsData;
+}
+
+bool FExtendEditorManagerModule::RequestDeleteAsset(const FAssetData& AssetData)
+{
+	TArray<FAssetData> AssetToDelete = {AssetData};
+	if (ObjectTools::DeleteAssets(AssetToDelete) > 0)
+	{
+		return true;
+	}
+
+	return false;
 }
 
 #undef LOCTEXT_NAMESPACE

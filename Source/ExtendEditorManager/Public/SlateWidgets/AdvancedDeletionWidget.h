@@ -18,11 +18,16 @@ public:
 	void Construct(const FArguments& args);
 
 private:
+	TSharedRef<SListView<TSharedPtr<FAssetData>>> ConstructListView();
 	TSharedRef<ITableRow> OnGenerateRowListView(TSharedPtr<FAssetData> AssetDataToDisplay, const TSharedRef<STableViewBase>& OwnerTable);
 	TSharedRef<SCheckBox> ConstructCheckBox(const TSharedPtr<FAssetData>& AssetDataToDisplay);
 	void OnCheckBoxStateChanged(ECheckBoxState NewState, TSharedPtr<FAssetData> AssetData);
 
 	TSharedRef<STextBlock> ConstructTextBlock(const FString& TextToDisplay, const FSlateFontInfo& Font);
+	TSharedRef<SButton> ConstructDeleteButton(TSharedPtr<FAssetData> AssetData);
+
+	FReply OnDeleteButtonClicked(TSharedPtr<FAssetData> AssetData);
 	
 	TArray<TSharedPtr<FAssetData>> AssetsData;
+	TSharedPtr<SListView<TSharedPtr<FAssetData>>> ListViewPtr;
 };

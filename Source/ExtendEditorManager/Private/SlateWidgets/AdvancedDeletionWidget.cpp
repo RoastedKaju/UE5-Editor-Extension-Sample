@@ -3,6 +3,7 @@
 
 #include "SlateWidgets/AdvancedDeletionWidget.h"
 #include "DebugHeader.h"
+#include "ExtendEditorManager.h"
 
 void SAdvancedDeletionWidget::Construct(const FArguments& args)
 {
@@ -37,9 +38,7 @@ void SAdvancedDeletionWidget::Construct(const FArguments& args)
 		+ SVerticalBox::Slot()
 		.VAlign(VAlign_Fill)
 		[
-			SNew(SListView<TSharedPtr<FAssetData>>)
-			.ListItemsSource(&AssetsData)
-			.OnGenerateRow(this, &SAdvancedDeletionWidget::OnGenerateRowListView)
+			ConstructListView()
 		]
 		// Buttons slot
 		+ SVerticalBox::Slot()
@@ -48,6 +47,15 @@ void SAdvancedDeletionWidget::Construct(const FArguments& args)
 			SNew(SHorizontalBox)
 		]
 	];
+}
+
+TSharedRef<SListView<TSharedPtr<FAssetData>>> SAdvancedDeletionWidget::ConstructListView()
+{
+	ListViewPtr = SNew(SListView<TSharedPtr<FAssetData>>)
+		.ListItemsSource(&AssetsData)
+		.OnGenerateRow(this, &SAdvancedDeletionWidget::OnGenerateRowListView);
+	
+	return ListViewPtr.ToSharedRef();
 }
 
 TSharedRef<ITableRow> SAdvancedDeletionWidget::OnGenerateRowListView(TSharedPtr<FAssetData> AssetDataToDisplay, const TSharedRef<STableViewBase>& OwnerTable)
@@ -84,10 +92,18 @@ TSharedRef<ITableRow> SAdvancedDeletionWidget::OnGenerateRowListView(TSharedPtr<
 			]
 			// Asset name slot
 			+ SHorizontalBox::Slot()
+			.VAlign(VAlign_Fill)
+			.HAlign(HAlign_Left)
 			[
 				ConstructTextBlock(AssetDataToDisplay->AssetName.ToString(), AssetNameFontStyle)
 			]
 			// Button slot
+			+ SHorizontalBox::Slot()
+			.VAlign(VAlign_Fill)
+			.HAlign(HAlign_Right)
+			[
+				ConstructDeleteButton(AssetDataToDisplay)
+			]
 		];
 
 	return GeneratedRow;
@@ -128,4 +144,34 @@ TSharedRef<STextBlock> SAdvancedDeletionWidget::ConstructTextBlock(const FString
 		.ColorAndOpacity(FColor::White);
 
 	return TextBlock;
+}
+
+TSharedRef<SButton> SAdvancedDeletionWidget::ConstructDeleteButton(TSharedPtr<FAssetData> AssetData)
+{
+	TSharedRef<SButton> DeleteButton = SNew(SButton)
+		.Text(FText::FromString("Delete"))
+		.OnClicked(this, &SAdvancedDeletionWidget::OnDeleteButtonClicked, AssetData);
+
+	return DeleteButton;
+}
+
+FReply SAdvancedDeletionWidget::OnDeleteButtonClicked(TSharedPtr<FAssetData> AssetData)
+{
+	FExtendEditorManagerModule& ExtendEditorManager = FModuleManager::LoadModuleChecked<FExtendEditorManagerModule>(TEXT("ExtendEditorManager"));
+
+	const bool bIsAssetDeleted = ExtendEditorManager.RequestDeleteAsset(*AssetData.Get());
+	if (bIsAssetDeleted)
+	{
+		if (AssetsData.Contains(AssetData))
+		{
+			AssetsData.Remove(AssetData);
+		}
+
+		if (ListViewPtr.IsValid())
+		{
+			ListViewPtr->RebuildList();
+		}
+	}
+
+	return FReply::Handled();
 }
