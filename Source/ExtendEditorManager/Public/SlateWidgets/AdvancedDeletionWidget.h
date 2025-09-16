@@ -27,6 +27,9 @@ private:
 	TSharedRef<SButton> ConstructDeleteButton(TSharedPtr<FAssetData> AssetData);
 
 	FReply OnDeleteButtonClicked(TSharedPtr<FAssetData> AssetData);
+	FReply OnDeleteAllButtonClicked();
+	FReply OnSelectAllButtonClicked();
+	FReply OnDeselectAllButtonClicked();
 	
 	TArray<TSharedPtr<FAssetData>> AssetsData;
 	TSharedPtr<SListView<TSharedPtr<FAssetData>>> ListViewPtr;

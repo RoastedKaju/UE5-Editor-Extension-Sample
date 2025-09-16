@@ -11,8 +11,11 @@ void SAdvancedDeletionWidget::Construct(const FArguments& args)
 
 	AssetsData = args._AssetDataArray;
 
-	FSlateFontInfo FontInfo = FCoreStyle::Get().GetFontStyle(FName("EmbossedText"));
-	FontInfo.Size = 30;
+	FSlateFontInfo TitleFontInfo = FCoreStyle::Get().GetFontStyle(FName("EmbossedText"));
+	TitleFontInfo.Size = 30;
+
+	FSlateFontInfo ButtonFont = FCoreStyle::Get().GetFontStyle(FName("NormalBold"));
+	ButtonFont.Size = 24.0f;
 
 	ChildSlot
 	[
@@ -23,7 +26,7 @@ void SAdvancedDeletionWidget::Construct(const FArguments& args)
 		[
 			SNew(STextBlock)
 			.Text(FText::FromString("Advanced Deletion"))
-			.Font(FontInfo)
+			.Font(TitleFontInfo)
 			.Justification(ETextJustify::Center)
 			.ColorAndOpacity(FColor::White)
 		]
@@ -45,6 +48,45 @@ void SAdvancedDeletionWidget::Construct(const FArguments& args)
 		.AutoHeight()
 		[
 			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.FillWidth(1.0f)
+			.Padding(5)
+			[
+				SNew(SButton)
+				.OnClicked(this, &SAdvancedDeletionWidget::OnDeleteAllButtonClicked)
+				[
+					SNew(STextBlock)
+					.Text(FText::FromString("Delete All"))
+					.Justification(ETextJustify::Center)
+					.Font(ButtonFont)
+				]
+			]
+			+ SHorizontalBox::Slot()
+			.FillWidth(1.0f)
+			.Padding(5)
+			[
+				SNew(SButton)
+				.OnClicked(this, &SAdvancedDeletionWidget::OnSelectAllButtonClicked)
+				[
+					SNew(STextBlock)
+					.Text(FText::FromString("Select All"))
+					.Justification(ETextJustify::Center)
+					.Font(ButtonFont)
+				]
+			]
+			+ SHorizontalBox::Slot()
+			.FillWidth(1.0f)
+			.Padding(5)
+			[
+				SNew(SButton)
+				.OnClicked(this, &SAdvancedDeletionWidget::OnDeselectAllButtonClicked)
+				[
+					SNew(STextBlock)
+					.Text(FText::FromString("Deselect All"))
+					.Justification(ETextJustify::Center)
+					.Font(ButtonFont)
+				]
+			]
 		]
 	];
 }
@@ -54,7 +96,7 @@ TSharedRef<SListView<TSharedPtr<FAssetData>>> SAdvancedDeletionWidget::Construct
 	ListViewPtr = SNew(SListView<TSharedPtr<FAssetData>>)
 		.ListItemsSource(&AssetsData)
 		.OnGenerateRow(this, &SAdvancedDeletionWidget::OnGenerateRowListView);
-	
+
 	return ListViewPtr.ToSharedRef();
 }
 
@@ -173,5 +215,23 @@ FReply SAdvancedDeletionWidget::OnDeleteButtonClicked(TSharedPtr<FAssetData> Ass
 		}
 	}
 
+	return FReply::Handled();
+}
+
+FReply SAdvancedDeletionWidget::OnDeleteAllButtonClicked()
+{
+	DebugHelper::ShowNotification(TEXT("Delete All Assets"));
+	return FReply::Handled();
+}
+
+FReply SAdvancedDeletionWidget::OnSelectAllButtonClicked()
+{
+	DebugHelper::ShowNotification(TEXT("Select All Assets"));
+	return FReply::Handled();
+}
+
+FReply SAdvancedDeletionWidget::OnDeselectAllButtonClicked()
+{
+	DebugHelper::ShowNotification(TEXT("Deselect All Assets"));
 	return FReply::Handled();
 }
