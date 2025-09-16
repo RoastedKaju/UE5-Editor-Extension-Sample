@@ -33,4 +33,5 @@ private:
 	
 	TArray<TSharedPtr<FAssetData>> AssetsData;
 	TSharedPtr<SListView<TSharedPtr<FAssetData>>> ListViewPtr;
+	TSet<TSharedPtr<FAssetData>> AssetsToDelete;
 };

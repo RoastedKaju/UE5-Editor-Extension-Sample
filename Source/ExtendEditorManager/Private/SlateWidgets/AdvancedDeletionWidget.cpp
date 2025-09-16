@@ -56,7 +56,7 @@ void SAdvancedDeletionWidget::Construct(const FArguments& args)
 				.OnClicked(this, &SAdvancedDeletionWidget::OnDeleteAllButtonClicked)
 				[
 					SNew(STextBlock)
-					.Text(FText::FromString("Delete All"))
+					.Text(FText::FromString("Delete Selected"))
 					.Justification(ETextJustify::Center)
 					.Font(ButtonFont)
 				]
@@ -166,10 +166,13 @@ void SAdvancedDeletionWidget::OnCheckBoxStateChanged(ECheckBoxState NewState, TS
 	switch (NewState)
 	{
 	case ECheckBoxState::Checked:
-		DebugHelper::ShowNotification(AssetData->AssetName.ToString() + TEXT(" Checked"));
+		AssetsToDelete.Add(AssetData);
 		break;
 	case ECheckBoxState::Unchecked:
-		DebugHelper::ShowNotification(AssetData->AssetName.ToString() + TEXT(" Unchecked"));
+		if (AssetsToDelete.Contains(AssetData))
+		{
+			AssetsToDelete.Remove(AssetData);
+		}
 		break;
 	case ECheckBoxState::Undetermined:
 		break;
@@ -220,7 +223,33 @@ FReply SAdvancedDeletionWidget::OnDeleteButtonClicked(TSharedPtr<FAssetData> Ass
 
 FReply SAdvancedDeletionWidget::OnDeleteAllButtonClicked()
 {
-	DebugHelper::ShowNotification(TEXT("Delete All Assets"));
+	if (AssetsToDelete.IsEmpty())
+	{
+		DebugHelper::ShowDialogMessage(EAppMsgType::Ok, TEXT("No Assets Selected."), false);
+		return FReply::Handled();
+	}
+
+	// Copy over the asset data from pointer to an array
+	TArray<FAssetData> AssetsToDeleteArray;
+	for (const TSharedPtr<FAssetData> Data : AssetsToDelete)
+	{
+		AssetsToDeleteArray.Add(*Data);
+	}
+
+	const FExtendEditorManagerModule& ExtendEditorModule = FModuleManager::LoadModuleChecked<FExtendEditorManagerModule>(TEXT("ExtendEditorManager"));
+	const bool bIsAssetDeleted = ExtendEditorModule.RequestMultipleDeleteAssets(AssetsToDeleteArray);
+
+	if (bIsAssetDeleted)
+	{
+		AssetsData.RemoveAll([&](const TSharedPtr<FAssetData>& Item){ return AssetsToDelete.Contains(Item); });
+
+		if (ListViewPtr.IsValid())
+		{
+			ListViewPtr->RebuildList();
+		}
+	}
+
+	AssetsToDelete.Empty();
 	return FReply::Handled();
 }
 

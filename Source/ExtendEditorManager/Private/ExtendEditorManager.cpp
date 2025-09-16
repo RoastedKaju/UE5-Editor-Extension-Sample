@@ -286,7 +286,7 @@ TArray<TSharedPtr<FAssetData>> FExtendEditorManagerModule::GetAllAssetDataInSele
 	return AvailableAssetsData;
 }
 
-bool FExtendEditorManagerModule::RequestDeleteAsset(const FAssetData& AssetData)
+bool FExtendEditorManagerModule::RequestDeleteAsset(const FAssetData& AssetData) const
 {
 	TArray<FAssetData> AssetToDelete = {AssetData};
 	if (ObjectTools::DeleteAssets(AssetToDelete) > 0)
@@ -294,6 +294,17 @@ bool FExtendEditorManagerModule::RequestDeleteAsset(const FAssetData& AssetData)
 		return true;
 	}
 
+	return false;
+}
+
+bool FExtendEditorManagerModule::RequestMultipleDeleteAssets(const TArray<FAssetData>& Assets) const
+{
+	TArray<FAssetData> AssetToDelete = Assets;
+	if (ObjectTools::DeleteAssets(AssetToDelete) > 0)
+	{
+		return true;
+	}
+	
 	return false;
 }
 

@@ -31,5 +31,6 @@ private:
 	TArray<TSharedPtr<FAssetData>> GetAllAssetDataInSelectedFolder();
 
 public:
-	bool RequestDeleteAsset(const FAssetData& AssetData);
+	bool RequestDeleteAsset(const FAssetData& AssetData) const;
+	bool RequestMultipleDeleteAssets(const TArray<FAssetData>& Assets) const;
 };
