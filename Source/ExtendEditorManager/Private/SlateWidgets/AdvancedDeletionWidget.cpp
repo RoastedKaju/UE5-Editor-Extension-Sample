@@ -17,6 +17,9 @@ void SAdvancedDeletionWidget::Construct(const FArguments& args)
 	FSlateFontInfo ButtonFont = FCoreStyle::Get().GetFontStyle(FName("NormalBold"));
 	ButtonFont.Size = 24.0f;
 
+	CheckBoxes.Empty();
+	AssetsToDelete.Empty();
+
 	ChildSlot
 	[
 		SNew(SVerticalBox)
@@ -158,6 +161,9 @@ TSharedRef<SCheckBox> SAdvancedDeletionWidget::ConstructCheckBox(const TSharedPt
 		.OnCheckStateChanged(this, &SAdvancedDeletionWidget::OnCheckBoxStateChanged, AssetDataToDisplay)
 		.Visibility(EVisibility::Visible);
 
+	// Add the created checkbox into checkboxes list
+	CheckBoxes.Add(ConstructedCheckBox);
+	
 	return ConstructedCheckBox;
 }
 
@@ -212,10 +218,7 @@ FReply SAdvancedDeletionWidget::OnDeleteButtonClicked(TSharedPtr<FAssetData> Ass
 			AssetsData.Remove(AssetData);
 		}
 
-		if (ListViewPtr.IsValid())
-		{
-			ListViewPtr->RebuildList();
-		}
+		RefreshListView();
 	}
 
 	return FReply::Handled();
@@ -243,10 +246,7 @@ FReply SAdvancedDeletionWidget::OnDeleteAllButtonClicked()
 	{
 		AssetsData.RemoveAll([&](const TSharedPtr<FAssetData>& Item){ return AssetsToDelete.Contains(Item); });
 
-		if (ListViewPtr.IsValid())
-		{
-			ListViewPtr->RebuildList();
-		}
+		RefreshListView();
 	}
 
 	AssetsToDelete.Empty();
@@ -255,12 +255,37 @@ FReply SAdvancedDeletionWidget::OnDeleteAllButtonClicked()
 
 FReply SAdvancedDeletionWidget::OnSelectAllButtonClicked()
 {
-	DebugHelper::ShowNotification(TEXT("Select All Assets"));
+	for (const auto& CheckBox : CheckBoxes)
+	{
+		if (!CheckBox->IsChecked())
+		{
+			CheckBox->ToggleCheckedState();
+		}
+	}
+	
 	return FReply::Handled();
 }
 
 FReply SAdvancedDeletionWidget::OnDeselectAllButtonClicked()
 {
-	DebugHelper::ShowNotification(TEXT("Deselect All Assets"));
+	for (const auto& CheckBox : CheckBoxes)
+	{
+		if (CheckBox->IsChecked())
+		{
+			CheckBox->ToggleCheckedState();
+		}
+	}
+	
 	return FReply::Handled();
+}
+
+void SAdvancedDeletionWidget::RefreshListView()
+{
+	CheckBoxes.Empty();
+	AssetsToDelete.Empty();
+	
+	if (ListViewPtr.IsValid())
+	{
+		ListViewPtr->RebuildList();
+	}
 }

@@ -30,8 +30,11 @@ private:
 	FReply OnDeleteAllButtonClicked();
 	FReply OnSelectAllButtonClicked();
 	FReply OnDeselectAllButtonClicked();
+
+	void RefreshListView();
 	
 	TArray<TSharedPtr<FAssetData>> AssetsData;
 	TSharedPtr<SListView<TSharedPtr<FAssetData>>> ListViewPtr;
 	TSet<TSharedPtr<FAssetData>> AssetsToDelete;
+	TArray<TSharedRef<SCheckBox>> CheckBoxes;
 };
