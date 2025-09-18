@@ -32,9 +32,15 @@ private:
 	FReply OnDeselectAllButtonClicked();
 
 	void RefreshListView();
+
+	TSharedRef<SComboBox<TSharedPtr<FString>>> ConstructComboBox();
+	TSharedRef<SWidget> OnGenerateComboContent(TSharedPtr<FString> Item);
+	void OnComboSelectionChanged(TSharedPtr<FString> SelectedOption, ESelectInfo::Type SelectInfo);
 	
 	TArray<TSharedPtr<FAssetData>> AssetsData;
 	TSharedPtr<SListView<TSharedPtr<FAssetData>>> ListViewPtr;
 	TSet<TSharedPtr<FAssetData>> AssetsToDelete;
 	TArray<TSharedRef<SCheckBox>> CheckBoxes;
+	TArray<TSharedPtr<FString>> ComboBoxOptions;
+	TSharedPtr<STextBlock> ComboDisplayTextBlock;
 };

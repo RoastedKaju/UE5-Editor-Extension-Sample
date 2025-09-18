@@ -36,9 +36,10 @@ void SAdvancedDeletionWidget::Construct(const FArguments& args)
 		// Conditions slot
 		+ SVerticalBox::Slot()
 		.AutoHeight()
+		.Padding(15.0f)
+		.HAlign(HAlign_Left)
 		[
-			SNew(STextBlock)
-			.Text(FText::FromString("Conditions Go Here."))
+			ConstructComboBox()
 		]
 		// Asset List slot
 		+ SVerticalBox::Slot()
@@ -288,4 +289,35 @@ void SAdvancedDeletionWidget::RefreshListView()
 	{
 		ListViewPtr->RebuildList();
 	}
+}
+
+TSharedRef<SComboBox<TSharedPtr<FString>>> SAdvancedDeletionWidget::ConstructComboBox()
+{
+	ComboBoxOptions.Emplace(MakeShared<FString>(TEXT("List All Available Assets")));
+	
+	const TSharedRef<SComboBox<TSharedPtr<FString>>> ConstructedComboBox = SNew(SComboBox<TSharedPtr<FString>>)
+		.OptionsSource(&ComboBoxOptions)
+		.OnGenerateWidget(this, &SAdvancedDeletionWidget::OnGenerateComboContent)
+		.OnSelectionChanged(this, &SAdvancedDeletionWidget::OnComboSelectionChanged)
+		[
+			SAssignNew(ComboDisplayTextBlock, STextBlock)
+			.Text(FText::FromString("List Assets Options"))
+		];
+	
+	return ConstructedComboBox;
+}
+
+TSharedRef<SWidget> SAdvancedDeletionWidget::OnGenerateComboContent(TSharedPtr<FString> Item)
+{
+	const TSharedRef<STextBlock> TextBlock = SNew(STextBlock)
+		.Text(FText::FromString(*Item));
+
+	return TextBlock;
+}
+
+void SAdvancedDeletionWidget::OnComboSelectionChanged(TSharedPtr<FString> SelectedOption, ESelectInfo::Type SelectInfo)
+{
+	DebugHelper::ShowNotification(*SelectedOption);
+
+	ComboDisplayTextBlock->SetText(FText::FromString(*SelectedOption));
 }
