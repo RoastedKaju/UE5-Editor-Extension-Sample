@@ -10,6 +10,7 @@ void SAdvancedDeletionWidget::Construct(const FArguments& args)
 	bCanSupportFocus = true;
 
 	AssetsData = args._AssetDataArray;
+	DisplayedAssetsData = AssetsData;
 
 	FSlateFontInfo TitleFontInfo = FCoreStyle::Get().GetFontStyle(FName("EmbossedText"));
 	TitleFontInfo.Size = 30;
@@ -98,7 +99,7 @@ void SAdvancedDeletionWidget::Construct(const FArguments& args)
 TSharedRef<SListView<TSharedPtr<FAssetData>>> SAdvancedDeletionWidget::ConstructListView()
 {
 	ListViewPtr = SNew(SListView<TSharedPtr<FAssetData>>)
-		.ListItemsSource(&AssetsData)
+		.ListItemsSource(&DisplayedAssetsData)
 		.OnGenerateRow(this, &SAdvancedDeletionWidget::OnGenerateRowListView);
 
 	return ListViewPtr.ToSharedRef();
@@ -294,6 +295,7 @@ void SAdvancedDeletionWidget::RefreshListView()
 TSharedRef<SComboBox<TSharedPtr<FString>>> SAdvancedDeletionWidget::ConstructComboBox()
 {
 	ComboBoxOptions.Emplace(MakeShared<FString>(TEXT("List All Available Assets")));
+	ComboBoxOptions.Emplace(MakeShared<FString>(TEXT("List All Unused Assets")));
 	
 	const TSharedRef<SComboBox<TSharedPtr<FString>>> ConstructedComboBox = SNew(SComboBox<TSharedPtr<FString>>)
 		.OptionsSource(&ComboBoxOptions)
@@ -317,7 +319,18 @@ TSharedRef<SWidget> SAdvancedDeletionWidget::OnGenerateComboContent(TSharedPtr<F
 
 void SAdvancedDeletionWidget::OnComboSelectionChanged(TSharedPtr<FString> SelectedOption, ESelectInfo::Type SelectInfo)
 {
-	DebugHelper::ShowNotification(*SelectedOption);
+	DebugHelper::ShowNotification(*SelectedOption);	ComboDisplayTextBlock->SetText(FText::FromString(*SelectedOption));
 
-	ComboDisplayTextBlock->SetText(FText::FromString(*SelectedOption));
+	if (*SelectedOption == *ComboBoxOptions[0])
+	{
+		// List all available asset data
+	}
+	else if (*SelectedOption == *ComboBoxOptions[1])
+	{
+		ComboDisplayTextBlock->SetText(FText::FromString(*SelectedOption));
+		// List all the unused assets
+		FExtendEditorManagerModule& ExtendEditorManagerModule = FModuleManager::GetModuleChecked<FExtendEditorManagerModule>(TEXT("ExtendEditorManager"));
+		ExtendEditorManagerModule.ListUnusedAssets(AssetsData, DisplayedAssetsData);
+		RefreshListView();
+	}
 }

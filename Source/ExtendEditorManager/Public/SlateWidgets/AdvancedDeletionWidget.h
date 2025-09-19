@@ -38,6 +38,7 @@ private:
 	void OnComboSelectionChanged(TSharedPtr<FString> SelectedOption, ESelectInfo::Type SelectInfo);
 	
 	TArray<TSharedPtr<FAssetData>> AssetsData;
+	TArray<TSharedPtr<FAssetData>> DisplayedAssetsData;
 	TSharedPtr<SListView<TSharedPtr<FAssetData>>> ListViewPtr;
 	TSet<TSharedPtr<FAssetData>> AssetsToDelete;
 	TArray<TSharedRef<SCheckBox>> CheckBoxes;

@@ -308,6 +308,21 @@ bool FExtendEditorManagerModule::RequestMultipleDeleteAssets(const TArray<FAsset
 	return false;
 }
 
+void FExtendEditorManagerModule::ListUnusedAssets(const TArray<TSharedPtr<FAssetData>>& AssetDataToFilter, TArray<TSharedPtr<FAssetData>>& OutUnusedAssets)
+{
+	OutUnusedAssets.Empty();
+
+	for (const auto& AssetData : AssetDataToFilter)
+	{
+		const TArray<FString> AssetReferencers = UEditorAssetLibrary::FindPackageReferencersForAsset(AssetData->GetObjectPathString());
+
+		if (AssetReferencers.IsEmpty())
+		{
+			OutUnusedAssets.Add(AssetData);
+		}
+	}
+}
+
 #undef LOCTEXT_NAMESPACE
 
 IMPLEMENT_MODULE(FExtendEditorManagerModule, ExtendEditorManager)
