@@ -238,6 +238,8 @@ void FExtendEditorManagerModule::DeleteUnusedAssetsAndFolders()
 
 void FExtendEditorManagerModule::AdvanceDelete()
 {
+	FixUpRedirectors();
+	
 	FGlobalTabmanager::Get()->TryInvokeTab(FName("AdvancedDeletion"));
 }
 

@@ -220,6 +220,11 @@ FReply SAdvancedDeletionWidget::OnDeleteButtonClicked(TSharedPtr<FAssetData> Ass
 			AssetsData.Remove(AssetData);
 		}
 
+		if (DisplayedAssetsData.Contains(AssetData))
+		{
+			DisplayedAssetsData.Remove(AssetData);
+		}
+
 		RefreshListView();
 	}
 
@@ -247,6 +252,7 @@ FReply SAdvancedDeletionWidget::OnDeleteAllButtonClicked()
 	if (bIsAssetDeleted)
 	{
 		AssetsData.RemoveAll([&](const TSharedPtr<FAssetData>& Item){ return AssetsToDelete.Contains(Item); });
+		DisplayedAssetsData.RemoveAll([&](const TSharedPtr<FAssetData>& Item){ return AssetsToDelete.Contains(Item); });
 
 		RefreshListView();
 	}
@@ -324,6 +330,8 @@ void SAdvancedDeletionWidget::OnComboSelectionChanged(TSharedPtr<FString> Select
 	if (*SelectedOption == *ComboBoxOptions[0])
 	{
 		// List all available asset data
+		DisplayedAssetsData = AssetsData;
+		RefreshListView();
 	}
 	else if (*SelectedOption == *ComboBoxOptions[1])
 	{
