@@ -302,6 +302,7 @@ TSharedRef<SComboBox<TSharedPtr<FString>>> SAdvancedDeletionWidget::ConstructCom
 {
 	ComboBoxOptions.Emplace(MakeShared<FString>(TEXT("List All Available Assets")));
 	ComboBoxOptions.Emplace(MakeShared<FString>(TEXT("List All Unused Assets")));
+	ComboBoxOptions.Emplace(MakeShared<FString>(TEXT("List Same Name Assets")));
 	
 	const TSharedRef<SComboBox<TSharedPtr<FString>>> ConstructedComboBox = SNew(SComboBox<TSharedPtr<FString>>)
 		.OptionsSource(&ComboBoxOptions)
@@ -327,18 +328,26 @@ void SAdvancedDeletionWidget::OnComboSelectionChanged(TSharedPtr<FString> Select
 {
 	DebugHelper::ShowNotification(*SelectedOption);	ComboDisplayTextBlock->SetText(FText::FromString(*SelectedOption));
 
+	// List all available assets
 	if (*SelectedOption == *ComboBoxOptions[0])
 	{
 		// List all available asset data
 		DisplayedAssetsData = AssetsData;
 		RefreshListView();
 	}
+	// List all unused asset
 	else if (*SelectedOption == *ComboBoxOptions[1])
 	{
-		ComboDisplayTextBlock->SetText(FText::FromString(*SelectedOption));
 		// List all the unused assets
 		FExtendEditorManagerModule& ExtendEditorManagerModule = FModuleManager::GetModuleChecked<FExtendEditorManagerModule>(TEXT("ExtendEditorManager"));
 		ExtendEditorManagerModule.ListUnusedAssets(AssetsData, DisplayedAssetsData);
+		RefreshListView();
+	}
+	// List Same name assets
+	else if (*SelectedOption == *ComboBoxOptions[2])
+	{
+		FExtendEditorManagerModule& ExtendEditorManagerModule = FModuleManager::LoadModuleChecked<FExtendEditorManagerModule>(TEXT("ExtendEditorManager"));
+		ExtendEditorManagerModule.ListSameNameAssets(AssetsData, DisplayedAssetsData);
 		RefreshListView();
 	}
 }

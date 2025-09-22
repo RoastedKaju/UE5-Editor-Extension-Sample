@@ -260,6 +260,11 @@ TSharedRef<SDockTab> FExtendEditorManagerModule::OnSpawnAdvancedDeletionEditorTa
 
 TArray<TSharedPtr<FAssetData>> FExtendEditorManagerModule::GetAllAssetDataInSelectedFolder()
 {
+	if (FolderPaths.IsEmpty())
+	{
+		return TArray<TSharedPtr<FAssetData>>();	
+	}
+	
 	TArray<TSharedPtr<FAssetData>> AvailableAssetsData;
 
 	TArray<FString> AssetsFoundList = UEditorAssetLibrary::ListAssets(FolderPaths[0]);
@@ -321,6 +326,30 @@ void FExtendEditorManagerModule::ListUnusedAssets(const TArray<TSharedPtr<FAsset
 		if (AssetReferencers.IsEmpty())
 		{
 			OutUnusedAssets.Add(AssetData);
+		}
+	}
+}
+
+void FExtendEditorManagerModule::ListSameNameAssets(const TArray<TSharedPtr<FAssetData>>& AssetDataToFilter, TArray<TSharedPtr<FAssetData>>& OutSameNameAssets)
+{
+	OutSameNameAssets.Empty();
+	TMultiMap<FString, TSharedPtr<FAssetData>> SameNameMultiMap;
+
+	for (const auto& AssetData : AssetDataToFilter)
+	{
+		SameNameMultiMap.Add(AssetData->AssetName.ToString(), AssetData);
+	}
+
+	TArray<FString> Keys;
+	SameNameMultiMap.GetKeys(Keys);
+	for (const auto& Key : Keys)
+	{
+		if (SameNameMultiMap.Num(Key) > 1)
+		{
+			TArray<TSharedPtr<FAssetData>> Assets;
+			SameNameMultiMap.MultiFind(Key, Assets);
+			
+			OutSameNameAssets.Append(Assets);
 		}
 	}
 }

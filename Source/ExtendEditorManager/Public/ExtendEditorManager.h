@@ -34,4 +34,5 @@ public:
 	bool RequestDeleteAsset(const FAssetData& AssetData) const;
 	bool RequestMultipleDeleteAssets(const TArray<FAssetData>& Assets) const;
 	void ListUnusedAssets(const TArray<TSharedPtr<FAssetData>>& AssetDataToFilter, TArray<TSharedPtr<FAssetData>>& OutUnusedAssets);
+	void ListSameNameAssets(const TArray<TSharedPtr<FAssetData>>& AssetDataToFilter, TArray<TSharedPtr<FAssetData>>& OutSameNameAssets);
 };
