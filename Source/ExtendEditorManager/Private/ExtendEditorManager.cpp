@@ -239,7 +239,7 @@ void FExtendEditorManagerModule::DeleteUnusedAssetsAndFolders()
 void FExtendEditorManagerModule::AdvanceDelete()
 {
 	FixUpRedirectors();
-	
+
 	FGlobalTabmanager::Get()->TryInvokeTab(FName("AdvancedDeletion"));
 }
 
@@ -262,9 +262,9 @@ TArray<TSharedPtr<FAssetData>> FExtendEditorManagerModule::GetAllAssetDataInSele
 {
 	if (FolderPaths.IsEmpty())
 	{
-		return TArray<TSharedPtr<FAssetData>>();	
+		return TArray<TSharedPtr<FAssetData>>();
 	}
-	
+
 	TArray<TSharedPtr<FAssetData>> AvailableAssetsData;
 
 	TArray<FString> AssetsFoundList = UEditorAssetLibrary::ListAssets(FolderPaths[0]);
@@ -311,7 +311,7 @@ bool FExtendEditorManagerModule::RequestMultipleDeleteAssets(const TArray<FAsset
 	{
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -348,10 +348,16 @@ void FExtendEditorManagerModule::ListSameNameAssets(const TArray<TSharedPtr<FAss
 		{
 			TArray<TSharedPtr<FAssetData>> Assets;
 			SameNameMultiMap.MultiFind(Key, Assets);
-			
+
 			OutSameNameAssets.Append(Assets);
 		}
 	}
+}
+
+void FExtendEditorManagerModule::GoToAssetInContentBrowser(const FString& AssetPath)
+{
+	const TArray<FString> AssetPaths{AssetPath};
+	UEditorAssetLibrary::SyncBrowserToObjects(AssetPaths);
 }
 
 #undef LOCTEXT_NAMESPACE

@@ -20,6 +20,7 @@ void SAdvancedDeletionWidget::Construct(const FArguments& args)
 
 	CheckBoxes.Empty();
 	AssetsToDelete.Empty();
+	ComboBoxOptions.Empty();
 
 	ChildSlot
 	[
@@ -100,7 +101,8 @@ TSharedRef<SListView<TSharedPtr<FAssetData>>> SAdvancedDeletionWidget::Construct
 {
 	ListViewPtr = SNew(SListView<TSharedPtr<FAssetData>>)
 		.ListItemsSource(&DisplayedAssetsData)
-		.OnGenerateRow(this, &SAdvancedDeletionWidget::OnGenerateRowListView);
+		.OnGenerateRow(this, &SAdvancedDeletionWidget::OnGenerateRowListView)
+		.OnMouseButtonClick(this, &SAdvancedDeletionWidget::OnRowWidgetClicked);
 
 	return ListViewPtr.ToSharedRef();
 }
@@ -156,6 +158,13 @@ TSharedRef<ITableRow> SAdvancedDeletionWidget::OnGenerateRowListView(TSharedPtr<
 	return GeneratedRow;
 }
 
+void SAdvancedDeletionWidget::OnRowWidgetClicked(TSharedPtr<FAssetData> AssetDataClicked)
+{
+	DebugHelper::ShowNotification(AssetDataClicked->AssetName.ToString() + TEXT(" Clicked"));
+	FExtendEditorManagerModule& ExtendEditorManagerModule = FModuleManager::GetModuleChecked<FExtendEditorManagerModule>("ExtendEditorManager");
+	ExtendEditorManagerModule.GoToAssetInContentBrowser(AssetDataClicked->GetObjectPathString());
+}
+
 TSharedRef<SCheckBox> SAdvancedDeletionWidget::ConstructCheckBox(const TSharedPtr<FAssetData>& AssetDataToDisplay)
 {
 	auto ConstructedCheckBox = SNew(SCheckBox)
@@ -165,7 +174,7 @@ TSharedRef<SCheckBox> SAdvancedDeletionWidget::ConstructCheckBox(const TSharedPt
 
 	// Add the created checkbox into checkboxes list
 	CheckBoxes.Add(ConstructedCheckBox);
-	
+
 	return ConstructedCheckBox;
 }
 
@@ -251,8 +260,8 @@ FReply SAdvancedDeletionWidget::OnDeleteAllButtonClicked()
 
 	if (bIsAssetDeleted)
 	{
-		AssetsData.RemoveAll([&](const TSharedPtr<FAssetData>& Item){ return AssetsToDelete.Contains(Item); });
-		DisplayedAssetsData.RemoveAll([&](const TSharedPtr<FAssetData>& Item){ return AssetsToDelete.Contains(Item); });
+		AssetsData.RemoveAll([&](const TSharedPtr<FAssetData>& Item) { return AssetsToDelete.Contains(Item); });
+		DisplayedAssetsData.RemoveAll([&](const TSharedPtr<FAssetData>& Item) { return AssetsToDelete.Contains(Item); });
 
 		RefreshListView();
 	}
@@ -270,7 +279,7 @@ FReply SAdvancedDeletionWidget::OnSelectAllButtonClicked()
 			CheckBox->ToggleCheckedState();
 		}
 	}
-	
+
 	return FReply::Handled();
 }
 
@@ -283,7 +292,7 @@ FReply SAdvancedDeletionWidget::OnDeselectAllButtonClicked()
 			CheckBox->ToggleCheckedState();
 		}
 	}
-	
+
 	return FReply::Handled();
 }
 
@@ -291,7 +300,7 @@ void SAdvancedDeletionWidget::RefreshListView()
 {
 	CheckBoxes.Empty();
 	AssetsToDelete.Empty();
-	
+
 	if (ListViewPtr.IsValid())
 	{
 		ListViewPtr->RebuildList();
@@ -303,7 +312,7 @@ TSharedRef<SComboBox<TSharedPtr<FString>>> SAdvancedDeletionWidget::ConstructCom
 	ComboBoxOptions.Emplace(MakeShared<FString>(TEXT("List All Available Assets")));
 	ComboBoxOptions.Emplace(MakeShared<FString>(TEXT("List All Unused Assets")));
 	ComboBoxOptions.Emplace(MakeShared<FString>(TEXT("List Same Name Assets")));
-	
+
 	const TSharedRef<SComboBox<TSharedPtr<FString>>> ConstructedComboBox = SNew(SComboBox<TSharedPtr<FString>>)
 		.OptionsSource(&ComboBoxOptions)
 		.OnGenerateWidget(this, &SAdvancedDeletionWidget::OnGenerateComboContent)
@@ -312,7 +321,7 @@ TSharedRef<SComboBox<TSharedPtr<FString>>> SAdvancedDeletionWidget::ConstructCom
 			SAssignNew(ComboDisplayTextBlock, STextBlock)
 			.Text(FText::FromString("List Assets Options"))
 		];
-	
+
 	return ConstructedComboBox;
 }
 
@@ -326,7 +335,8 @@ TSharedRef<SWidget> SAdvancedDeletionWidget::OnGenerateComboContent(TSharedPtr<F
 
 void SAdvancedDeletionWidget::OnComboSelectionChanged(TSharedPtr<FString> SelectedOption, ESelectInfo::Type SelectInfo)
 {
-	DebugHelper::ShowNotification(*SelectedOption);	ComboDisplayTextBlock->SetText(FText::FromString(*SelectedOption));
+	DebugHelper::ShowNotification(*SelectedOption);
+	ComboDisplayTextBlock->SetText(FText::FromString(*SelectedOption));
 
 	// List all available assets
 	if (*SelectedOption == *ComboBoxOptions[0])
