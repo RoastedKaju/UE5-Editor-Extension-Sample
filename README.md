@@ -5,11 +5,20 @@ This is a Practice/Sample Project which includes Extending the editor using tool
 - Renaming.
 - Adding Prefixes
 
-### 🛠️ Content Browser Menu Entries
+---
+
+### Content Browser Menu Entries
 - Delete Unused Assets
 - Delete Empty Folders
 
-### 👨‍💻 Slate Widget Examples
+---
+
+### Slate Based Tools
+- Unused Asset Finder
+
+---
+
+### Slate Widget Examples
 - Extending the Play Bar
 - Compound Widgets
 - Global Tab Manager
