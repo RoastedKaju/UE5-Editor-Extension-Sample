@@ -12,6 +12,7 @@ class EXTENDEDITORMANAGER_API SAdvancedDeletionWidget : public SCompoundWidget
 {
 	SLATE_BEGIN_ARGS(SAdvancedDeletionWidget) {}
 		SLATE_ARGUMENT(TArray<TSharedPtr<FAssetData>>, AssetDataArray)
+		SLATE_ARGUMENT(FString, FolderPath)
 	SLATE_END_ARGS()
 
 public:
@@ -37,6 +38,8 @@ private:
 	TSharedRef<SComboBox<TSharedPtr<FString>>> ConstructComboBox();
 	TSharedRef<SWidget> OnGenerateComboContent(TSharedPtr<FString> Item);
 	void OnComboSelectionChanged(TSharedPtr<FString> SelectedOption, ESelectInfo::Type SelectInfo);
+
+	TSharedRef<STextBlock> CreateTextBlock(FText Content, ETextJustify::Type Justify);
 	
 	TArray<TSharedPtr<FAssetData>> AssetsData;
 	TArray<TSharedPtr<FAssetData>> DisplayedAssetsData;

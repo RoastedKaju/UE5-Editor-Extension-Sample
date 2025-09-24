@@ -22,6 +22,7 @@ void FExtendEditorManagerModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
+	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(FName("AdvancedDeletion"));
 }
 
 void FExtendEditorManagerModule::InitContentBrowserExtension()
@@ -255,6 +256,7 @@ TSharedRef<SDockTab> FExtendEditorManagerModule::OnSpawnAdvancedDeletionEditorTa
 		[
 			SNew(SAdvancedDeletionWidget)
 			.AssetDataArray(GetAllAssetDataInSelectedFolder())
+			.FolderPath(FolderPaths[0])
 		];
 }
 

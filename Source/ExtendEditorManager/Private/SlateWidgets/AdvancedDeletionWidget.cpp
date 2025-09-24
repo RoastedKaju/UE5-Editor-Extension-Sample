@@ -5,6 +5,7 @@
 #include "DebugHeader.h"
 #include "ExtendEditorManager.h"
 
+
 void SAdvancedDeletionWidget::Construct(const FArguments& args)
 {
 	bCanSupportFocus = true;
@@ -39,9 +40,26 @@ void SAdvancedDeletionWidget::Construct(const FArguments& args)
 		+ SVerticalBox::Slot()
 		.AutoHeight()
 		.Padding(15.0f)
-		.HAlign(HAlign_Left)
 		[
-			ConstructComboBox()
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				ConstructComboBox()
+			]
+			+ SHorizontalBox::Slot()
+			.Padding(5.0f)
+			.FillWidth(0.6f)
+			[
+				CreateTextBlock(FText::FromString("Select any option from the drop down menu."), ETextJustify::Center)
+			]
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			.Padding(5.0f)
+			.FillWidth(0.3f)
+			[
+				CreateTextBlock(FText::FromString(args._FolderPath), ETextJustify::Center)
+			]
 		]
 		// Asset List slot
 		+ SVerticalBox::Slot()
@@ -360,4 +378,14 @@ void SAdvancedDeletionWidget::OnComboSelectionChanged(TSharedPtr<FString> Select
 		ExtendEditorManagerModule.ListSameNameAssets(AssetsData, DisplayedAssetsData);
 		RefreshListView();
 	}
+}
+
+TSharedRef<STextBlock> SAdvancedDeletionWidget::CreateTextBlock(FText Content, ETextJustify::Type Justify)
+{
+	TSharedRef<STextBlock> ConstructedTextBlock = SNew(STextBlock)
+		.Text(Content)
+		.Justification(Justify)
+		.AutoWrapText(true);
+
+	return ConstructedTextBlock;
 }
