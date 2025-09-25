@@ -29,6 +29,7 @@ public class ExtendEditorManager : ModuleRules
 				"UnrealEd",
 				"AssetTools",
 				"ContentBrowser",
+				"Projects"
 			}
 			);
 	}
