@@ -9,6 +9,7 @@
 #include "DebugHeader.h"
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "SlateWidgets/AdvancedDeletionWidget.h"
+#include "Styles/ExtendEditorManagerStyle.h"
 
 #define LOCTEXT_NAMESPACE "FExtendEditorManagerModule"
 
@@ -16,6 +17,8 @@ void FExtendEditorManagerModule::StartupModule()
 {
 	InitContentBrowserExtension();
 	RegisterAdvancedDeletionEditorTab();
+
+	FExtendEditorManagerStyle::InitializeIcons();
 }
 
 void FExtendEditorManagerModule::ShutdownModule()
@@ -23,6 +26,8 @@ void FExtendEditorManagerModule::ShutdownModule()
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
 	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(FName("AdvancedDeletion"));
+
+	FExtendEditorManagerStyle::Shutdown();
 }
 
 void FExtendEditorManagerModule::InitContentBrowserExtension()
@@ -58,7 +63,7 @@ void FExtendEditorManagerModule::AddContentBrowserMenuEntry(FMenuBuilder& MenuBu
 	(
 		FText::FromString(TEXT("Delete Unused Assets")),
 		FText::FromString(TEXT("Tooltip for unused asset deletion")),
-		FSlateIcon(),
+		FSlateIcon(FExtendEditorManagerStyle::GetStyleName(), "ContentBrowser.DeleteUnusedAssets"),
 		FExecuteAction::CreateRaw(this, &FExtendEditorManagerModule::DeleteUnusedAssets)
 	);
 
@@ -66,7 +71,7 @@ void FExtendEditorManagerModule::AddContentBrowserMenuEntry(FMenuBuilder& MenuBu
 	(
 		FText::FromString(TEXT("Delete Empty Folders")),
 		FText::FromString(TEXT("Tooltip for empty folders")),
-		FSlateIcon(),
+		FSlateIcon(FExtendEditorManagerStyle::GetStyleName(), "ContentBrowser.DeleteEmptyFolders"),
 		FExecuteAction::CreateRaw(this, &FExtendEditorManagerModule::DeleteEmptyFolders)
 	);
 
@@ -74,7 +79,7 @@ void FExtendEditorManagerModule::AddContentBrowserMenuEntry(FMenuBuilder& MenuBu
 	(
 		FText::FromString(TEXT("Delete Unused Assets And Empty Folders")),
 		FText::FromString(TEXT("Tooltip for unused asset deletion")),
-		FSlateIcon(),
+		FSlateIcon(FExtendEditorManagerStyle::GetStyleName(), "ContentBrowser.DeleteEmptyFolders"),
 		FExecuteAction::CreateRaw(this, &FExtendEditorManagerModule::DeleteUnusedAssetsAndFolders)
 	);
 
@@ -82,7 +87,7 @@ void FExtendEditorManagerModule::AddContentBrowserMenuEntry(FMenuBuilder& MenuBu
 	(
 		FText::FromString(TEXT("Advanced Deletion")),
 		FText::FromString(TEXT("Nothing")),
-		FSlateIcon(),
+		FSlateIcon(FExtendEditorManagerStyle::GetStyleName(), "ContentBrowser.AdvanceDelete"),
 		FExecuteAction::CreateRaw(this, &FExtendEditorManagerModule::AdvanceDelete)
 	);
 }

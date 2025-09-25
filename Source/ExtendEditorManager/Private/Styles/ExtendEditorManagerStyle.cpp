@@ -19,6 +19,11 @@ void FExtendEditorManagerStyle::InitializeIcons()
 
 void FExtendEditorManagerStyle::Shutdown()
 {
+	if (CreatedSlateStyle.IsValid())
+	{
+		FSlateStyleRegistry::UnRegisterSlateStyle(*CreatedSlateStyle);
+		CreatedSlateStyle.Reset();
+	}
 }
 
 TSharedRef<FSlateStyleSet> FExtendEditorManagerStyle::CreateSlateStyleSet()
@@ -30,6 +35,8 @@ TSharedRef<FSlateStyleSet> FExtendEditorManagerStyle::CreateSlateStyleSet()
 	
 	const FVector2D IconSize = FVector2D(16.0f, 16.0f);
 	CustomStyleSet->Set("ContentBrowser.DeleteUnusedAssets", new FSlateImageBrush(IconDirectory/"Bin.png", IconSize));
+	CustomStyleSet->Set("ContentBrowser.DeleteEmptyFolders", new FSlateImageBrush(IconDirectory/"FolderFlames.png", IconSize));
+	CustomStyleSet->Set("ContentBrowser.AdvanceDelete", new FSlateImageBrush(IconDirectory/"AdvanceDelete.png", IconSize));
 	
 	return CustomStyleSet;
 }
