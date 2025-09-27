@@ -25,6 +25,8 @@ public class ExtendEditorManager : ModuleRules
 				"Slate",
 				"SlateCore",
 				"Blutility",
+				"UMG",
+				"UMGEditor",
 				"EditorScriptingUtilities",
 				"UnrealEd",
 				"AssetTools",
