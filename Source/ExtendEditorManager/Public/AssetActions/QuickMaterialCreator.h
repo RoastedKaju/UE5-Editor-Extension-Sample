@@ -23,4 +23,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "CreateMaterialFromTextures", meta=(EditCondition="bUseCustomName"))
 	FString MaterialName = TEXT("M_");
+
+private:
+	bool ProcessSelectedData(const TArray<FAssetData>& SelectedData, TArray<UTexture2D*>& OutTextures, FString& PackagePath);
+	bool CheckIsNameUsed(const FString& FolderToCheck, const FString& NameToCheck) const;
 };
