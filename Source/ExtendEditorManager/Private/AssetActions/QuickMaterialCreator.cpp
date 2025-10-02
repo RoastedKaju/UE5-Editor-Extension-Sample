@@ -2,9 +2,11 @@
 
 
 #include "AssetActions/QuickMaterialCreator.h"
-#include  "DebugHeader.h"
+#include "DebugHeader.h"
 #include "EditorUtilityLibrary.h"
 #include "EditorAssetLibrary.h"
+#include "AssetToolsModule.h"
+#include "Factories/MaterialFactoryNew.h"
 
 void UQuickMaterialCreator::CreateMaterialFromSelectedTextures()
 {
@@ -29,7 +31,13 @@ void UQuickMaterialCreator::CreateMaterialFromSelectedTextures()
 		return;
 	}
 
-	DebugHelper::ShowNotification(SelectedTexturePath);
+	UMaterial* CreatedMaterial = CreateMaterialAsset(MaterialName, SelectedTexturePath);
+
+	if (!IsValid(CreatedMaterial))
+	{
+		DebugHelper::ShowDialogMessage(EAppMsgType::Ok, TEXT("Failed to create material"), true);
+		return;
+	}
 }
 
 bool UQuickMaterialCreator::ProcessSelectedData(const TArray<FAssetData>& SelectedData, TArray<UTexture2D*>& OutTextures, FString& PackagePath)
@@ -88,4 +96,16 @@ bool UQuickMaterialCreator::CheckIsNameUsed(const FString& FolderToCheck, const 
 	}
 
 	return false;
+}
+
+UMaterial* UQuickMaterialCreator::CreateMaterialAsset(const FString& InMaterialName, const FString& Path)
+{
+	// Load asset tools module
+	const FAssetToolsModule& AssetToolsModule = FModuleManager::Get().LoadModuleChecked<FAssetToolsModule>("AssetTools");
+
+	// Create Asset and Factory
+	UMaterialFactoryNew* Factory = NewObject<UMaterialFactoryNew>();
+	UObject* CreatedAsset = AssetToolsModule.Get().CreateAsset(InMaterialName, Path, UMaterial::StaticClass(), Factory);
+	
+	return Cast<UMaterial>(CreatedAsset);
 }

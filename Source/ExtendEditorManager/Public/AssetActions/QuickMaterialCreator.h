@@ -24,7 +24,38 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "CreateMaterialFromTextures", meta=(EditCondition="bUseCustomName"))
 	FString MaterialName = TEXT("M_");
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "SupportedTexturesArray")
+	TArray<FString> BaseColorArray = {TEXT("_BaseColor"), TEXT("_Diffuse"), TEXT("_Albedo"), TEXT("_Diff")};
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "SupportedTexturesArray")
+	TArray<FString> MetallicArray = {
+		TEXT("_Metallic"),
+		TEXT("_metal")
+		};
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "SupportedTexturesArray")
+	TArray<FString> RoughnessArray = {
+		TEXT("_Roughness"),
+		TEXT("_RoughnessMap"),
+		TEXT("_rough")
+		};
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "SupportedTexturesArray")
+	TArray<FString> NormalArray = {
+		TEXT("_Normal"),
+		TEXT("_NormalMap"),
+		TEXT("_nor")
+		};
+	              
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "SupportedTexturesArray")
+	TArray<FString> AmbientOcclusionArray = {
+		TEXT("_AmbientOcclusion"),
+		TEXT("_AmbientOcclusionMap"),
+		TEXT("_AO")
+		};
+
 private:
 	bool ProcessSelectedData(const TArray<FAssetData>& SelectedData, TArray<UTexture2D*>& OutTextures, FString& PackagePath);
 	bool CheckIsNameUsed(const FString& FolderToCheck, const FString& NameToCheck) const;
+	UMaterial* CreateMaterialAsset(const FString& InMaterialName, const FString& Path);
 };
