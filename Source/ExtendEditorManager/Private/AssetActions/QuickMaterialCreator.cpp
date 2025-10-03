@@ -22,6 +22,7 @@ void UQuickMaterialCreator::CreateMaterialFromSelectedTextures()
 	const TArray<FAssetData> SelectedAssets = UEditorUtilityLibrary::GetSelectedAssetData();
 	TArray<UTexture2D*> SelectedTextures;
 	FString SelectedTexturePath;
+	uint32 PinCounter = 0;
 
 	const bool bSuccess = ProcessSelectedData(SelectedAssets, SelectedTextures, SelectedTexturePath);
 	if (!bSuccess) return;
@@ -37,6 +38,14 @@ void UQuickMaterialCreator::CreateMaterialFromSelectedTextures()
 	{
 		DebugHelper::ShowDialogMessage(EAppMsgType::Ok, TEXT("Failed to create material"), true);
 		return;
+	}
+
+	for (const auto& Texture : SelectedTextures)
+	{
+		if (IsValid(Texture))
+		{
+			Default_CreateNewMaterialNode(CreatedMaterial, Texture, PinCounter);
+		}
 	}
 }
 
@@ -106,6 +115,50 @@ UMaterial* UQuickMaterialCreator::CreateMaterialAsset(const FString& InMaterialN
 	// Create Asset and Factory
 	UMaterialFactoryNew* Factory = NewObject<UMaterialFactoryNew>();
 	UObject* CreatedAsset = AssetToolsModule.Get().CreateAsset(InMaterialName, Path, UMaterial::StaticClass(), Factory);
-	
+
 	return Cast<UMaterial>(CreatedAsset);
+}
+
+void UQuickMaterialCreator::Default_CreateNewMaterialNode(UMaterial* CreatedMaterial, UTexture2D* SelectedTexture, uint32& PinsConnectedCounter)
+{
+	UMaterialExpressionTextureSample* TextureSampleNode = NewObject<UMaterialExpressionTextureSample>(CreatedMaterial);
+
+	if (!TextureSampleNode) return;
+
+	if (!CreatedMaterial->HasBaseColorConnected())
+	{
+		if (TryConnectBaseColor(TextureSampleNode, SelectedTexture, CreatedMaterial))
+		{
+			PinsConnectedCounter++;
+			return;
+		}
+	}
+}
+
+bool UQuickMaterialCreator::TryConnectBaseColor(UMaterialExpressionTextureSample* TextureSampleNode, UTexture2D* SelectedTexture, UMaterial* CreatedMaterial)
+{
+	for (const auto& BaseColorName : BaseColorArray)
+	{
+		if (SelectedTexture->GetName().Contains(BaseColorName))
+		{
+			TextureSampleNode->Texture = SelectedTexture;
+			UMaterialEditorOnlyData* MaterialEditorData = CreatedMaterial->GetEditorOnlyData();
+			if (MaterialEditorData)
+			{
+				// Add the texture sample node to the material graph
+				MaterialEditorData->ExpressionCollection.Expressions.Add(TextureSampleNode);
+
+				// Connect the node to BaseColor
+				FExpressionInput& BaseColorInput = CreatedMaterial->GetEditorOnlyData()->BaseColor;
+				BaseColorInput.Expression = TextureSampleNode;
+			}
+			CreatedMaterial->PostEditChange();
+
+			// Offset
+			TextureSampleNode->MaterialExpressionEditorX -= 600.0f;
+
+			return true;
+		}
+	}
+	return false;
 }
