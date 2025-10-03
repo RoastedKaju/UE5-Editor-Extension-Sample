@@ -66,4 +66,5 @@ private:
 	UMaterial* CreateMaterialAsset(const FString& InMaterialName, const FString& Path);
 	void Default_CreateNewMaterialNode(UMaterial* CreatedMaterial, UTexture2D* SelectedTexture, uint32& PinsConnectedCounter);
 	bool TryConnectBaseColor(UMaterialExpressionTextureSample* TextureSampleNode, UTexture2D* SelectedTexture, UMaterial* CreatedMaterial);
+	bool TryConnectMetallic(UMaterialExpressionTextureSample* TextureSampleNode, UTexture2D* SelectedTexture, UMaterial* CreatedMaterial);
 };
