@@ -147,6 +147,33 @@ void UQuickMaterialCreator::Default_CreateNewMaterialNode(UMaterial* CreatedMate
 			return;
 		}
 	}
+
+	if (!CreatedMaterial->HasRoughnessConnected())
+	{
+		if (TryConnectRoughness(TextureSampleNode, SelectedTexture, CreatedMaterial))
+		{
+			PinsConnectedCounter++;
+			return;
+		}
+	}
+
+	if (!CreatedMaterial->HasNormalConnected())
+	{
+		if (TryConnectNormal(TextureSampleNode, SelectedTexture, CreatedMaterial))
+		{
+			PinsConnectedCounter++;
+			return;
+		}
+	}
+
+	if (!CreatedMaterial->HasAmbientOcclusionConnected())
+	{
+		if (TryConnectAO(TextureSampleNode, SelectedTexture, CreatedMaterial))
+		{
+			PinsConnectedCounter++;
+			return;
+		}
+	}
 }
 
 bool UQuickMaterialCreator::TryConnectBaseColor(UMaterialExpressionTextureSample* TextureSampleNode, UTexture2D* SelectedTexture, UMaterial* CreatedMaterial)
@@ -205,6 +232,108 @@ bool UQuickMaterialCreator::TryConnectMetallic(UMaterialExpressionTextureSample*
 
 			TextureSampleNode->MaterialExpressionEditorX -= 600.0f;
 			TextureSampleNode->MaterialExpressionEditorY += 240;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool UQuickMaterialCreator::TryConnectRoughness(UMaterialExpressionTextureSample* TextureSampleNode, UTexture2D* SelectedTexture, UMaterial* CreatedMaterial)
+{
+	for (const FString& RoughnessName : RoughnessArray)
+	{
+		if (SelectedTexture->GetName().Contains(RoughnessName))
+		{
+			SelectedTexture->CompressionSettings = TC_Default;
+			SelectedTexture->SRGB = false;
+			SelectedTexture->PostEditChange();
+
+			TextureSampleNode->Texture = SelectedTexture;
+			TextureSampleNode->SamplerType = SAMPLERTYPE_LinearColor;
+
+			UMaterialEditorOnlyData* MaterialEditorData = CreatedMaterial->GetEditorOnlyData();
+			if (MaterialEditorData)
+			{
+				// Add the texture sample node to the material graph
+				MaterialEditorData->ExpressionCollection.Expressions.Add(TextureSampleNode);
+
+				// Connect pin
+				FExpressionInput& RoughnessInput = CreatedMaterial->GetEditorOnlyData()->Roughness;
+				RoughnessInput.Expression = TextureSampleNode;
+			}
+
+			CreatedMaterial->PostEditChange();
+
+			TextureSampleNode->MaterialExpressionEditorX -= 600.0f;
+			TextureSampleNode->MaterialExpressionEditorY += 480;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool UQuickMaterialCreator::TryConnectNormal(UMaterialExpressionTextureSample* TextureSampleNode, UTexture2D* SelectedTexture, UMaterial* CreatedMaterial)
+{
+	for (const FString& NormalName : NormalArray)
+	{
+		if (SelectedTexture->GetName().Contains(NormalName))
+		{
+			SelectedTexture->CompressionSettings = TC_Normalmap;
+			SelectedTexture->SRGB = false;
+			SelectedTexture->PostEditChange();
+
+			TextureSampleNode->Texture = SelectedTexture;
+			TextureSampleNode->SamplerType = SAMPLERTYPE_Normal;
+
+			UMaterialEditorOnlyData* MaterialEditorData = CreatedMaterial->GetEditorOnlyData();
+			if (MaterialEditorData)
+			{
+				// Add the texture sample node to the material graph
+				MaterialEditorData->ExpressionCollection.Expressions.Add(TextureSampleNode);
+
+				// Connect pin
+				FExpressionInput& NormalInput = CreatedMaterial->GetEditorOnlyData()->Normal;
+				NormalInput.Expression = TextureSampleNode;
+			}
+
+			CreatedMaterial->PostEditChange();
+
+			TextureSampleNode->MaterialExpressionEditorX -= 600.0f;
+			TextureSampleNode->MaterialExpressionEditorY += 720;
+			return true;
+		}
+	}
+	return false;
+}
+
+bool UQuickMaterialCreator::TryConnectAO(UMaterialExpressionTextureSample* TextureSampleNode, UTexture2D* SelectedTexture, UMaterial* CreatedMaterial)
+{
+	for (const FString& AOName : AmbientOcclusionArray)
+	{
+		if (SelectedTexture->GetName().Contains(AOName))
+		{
+			SelectedTexture->CompressionSettings = TC_Default;
+			SelectedTexture->SRGB = false;
+			SelectedTexture->PostEditChange();
+
+			TextureSampleNode->Texture = SelectedTexture;
+			TextureSampleNode->SamplerType = SAMPLERTYPE_LinearColor;
+
+			UMaterialEditorOnlyData* MaterialEditorData = CreatedMaterial->GetEditorOnlyData();
+			if (MaterialEditorData)
+			{
+				// Add the texture sample node to the material graph
+				MaterialEditorData->ExpressionCollection.Expressions.Add(TextureSampleNode);
+
+				// Connect pin
+				FExpressionInput& AOInput = CreatedMaterial->GetEditorOnlyData()->AmbientOcclusion;
+				AOInput.Expression = TextureSampleNode;
+			}
+
+			CreatedMaterial->PostEditChange();
+
+			TextureSampleNode->MaterialExpressionEditorX -= 600.0f;
+			TextureSampleNode->MaterialExpressionEditorY += 960;
 			return true;
 		}
 	}
