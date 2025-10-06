@@ -7,6 +7,14 @@
 #include "Materials/MaterialExpressionTextureSample.h"
 #include "QuickMaterialCreator.generated.h"
 
+UENUM(BlueprintType)
+enum class EChannelPackingType : uint8
+{
+	NoChannelPacking			UMETA(DisplayName = "No Channel Packing"),
+	ORM							UMETA(DisplayName = "Occlusion Roughness Metallic"),
+	MAX							UMETA(DisplayName = "Default Max"),
+};
+
 /**
  * 
  */
@@ -18,6 +26,9 @@ class EXTENDEDITORMANAGER_API UQuickMaterialCreator : public UEditorUtilityWidge
 public:
 	UFUNCTION(BlueprintCallable)
 	void CreateMaterialFromSelectedTextures();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CreateMaterialFromTextures")
+	EChannelPackingType ChannelPackingType = EChannelPackingType::NoChannelPacking;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "CreateMaterialFromTextures")
 	bool bUseCustomName = true;
@@ -60,15 +71,24 @@ public:
 		TEXT("_AO")
 	};
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category = "SupportedTexturesArray")
+	TArray<FString> ORMArray = {
+		TEXT("_arm"),
+		TEXT("_ORM"),
+		TEXT("_OcclusionRoughnessMetallic")
+	};
+
 private:
 	bool ProcessSelectedData(const TArray<FAssetData>& SelectedData, TArray<UTexture2D*>& OutTextures, FString& PackagePath);
 	bool CheckIsNameUsed(const FString& FolderToCheck, const FString& NameToCheck) const;
 	UMaterial* CreateMaterialAsset(const FString& InMaterialName, const FString& Path);
 	void Default_CreateNewMaterialNode(UMaterial* CreatedMaterial, UTexture2D* SelectedTexture, uint32& PinsConnectedCounter);
+	void ORM_CreateNewMaterialNode(UMaterial* CreatedMaterial, UTexture2D* SelectedTexture, uint32& PinsConnectedCounter);
 	bool TryConnectBaseColor(UMaterialExpressionTextureSample* TextureSampleNode, UTexture2D* SelectedTexture, UMaterial* CreatedMaterial);
 	bool TryConnectMetallic(UMaterialExpressionTextureSample* TextureSampleNode, UTexture2D* SelectedTexture, UMaterial* CreatedMaterial);
 	bool TryConnectRoughness(UMaterialExpressionTextureSample* TextureSampleNode, UTexture2D* SelectedTexture, UMaterial* CreatedMaterial);
 	bool TryConnectNormal(UMaterialExpressionTextureSample* TextureSampleNode, UTexture2D* SelectedTexture, UMaterial* CreatedMaterial);
 	bool TryConnectAO(UMaterialExpressionTextureSample* TextureSampleNode, UTexture2D* SelectedTexture, UMaterial* CreatedMaterial);
+	bool TryConnectORM(UMaterialExpressionTextureSample* TextureSampleNode, UTexture2D* SelectedTexture, UMaterial* CreatedMaterial);
 	
 };
