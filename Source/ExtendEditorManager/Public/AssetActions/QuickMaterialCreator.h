@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "EditorUtilityWidget.h"
 #include "Materials/MaterialExpressionTextureSample.h"
+#include "Materials/MaterialInstanceConstant.h"
 #include "QuickMaterialCreator.generated.h"
 
 UENUM(BlueprintType)
@@ -36,6 +37,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "CreateMaterialFromTextures", meta=(EditCondition="bUseCustomName"))
 	FString MaterialName = TEXT("M_");
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "CreateMaterialFromTextures")
+	bool bCreateMaterialInstance = false;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "SupportedTexturesArray")
 	TArray<FString> BaseColorArray = {
 		TEXT("_BaseColor"),
@@ -90,5 +94,5 @@ private:
 	bool TryConnectNormal(UMaterialExpressionTextureSample* TextureSampleNode, UTexture2D* SelectedTexture, UMaterial* CreatedMaterial);
 	bool TryConnectAO(UMaterialExpressionTextureSample* TextureSampleNode, UTexture2D* SelectedTexture, UMaterial* CreatedMaterial);
 	bool TryConnectORM(UMaterialExpressionTextureSample* TextureSampleNode, UTexture2D* SelectedTexture, UMaterial* CreatedMaterial);
-	
+	UMaterialInstanceConstant* CreateMaterialInstanceConstant(UMaterial* CreatedMaterial, FString InMaterialName, const FString& Path);
 };

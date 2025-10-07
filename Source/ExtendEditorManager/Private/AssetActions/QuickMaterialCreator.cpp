@@ -7,6 +7,7 @@
 #include "EditorAssetLibrary.h"
 #include "AssetToolsModule.h"
 #include "Factories/MaterialFactoryNew.h"
+#include "Factories/MaterialInstanceConstantFactoryNew.h"
 
 void UQuickMaterialCreator::CreateMaterialFromSelectedTextures()
 {
@@ -61,6 +62,11 @@ void UQuickMaterialCreator::CreateMaterialFromSelectedTextures()
 	if (PinCounter > 0)
 	{
 		DebugHelper::ShowNotification(TEXT("Successfully connected ") + FString::FromInt(PinCounter) + TEXT(" pins."));
+	}
+
+	if (bCreateMaterialInstance)
+	{
+		CreateMaterialInstanceConstant(CreatedMaterial, MaterialName, SelectedTexturePath);
 	}
 }
 
@@ -420,4 +426,29 @@ bool UQuickMaterialCreator::TryConnectORM(UMaterialExpressionTextureSample* Text
 	}
 
 	return false;
+}
+
+UMaterialInstanceConstant* UQuickMaterialCreator::CreateMaterialInstanceConstant(UMaterial* CreatedMaterial, FString InMaterialName, const FString& Path)
+{
+	InMaterialName.RemoveFromStart(TEXT("M_"));
+	InMaterialName.InsertAt(0, TEXT("MI_"));
+
+	// Load asset tools module
+	const FAssetToolsModule& AssetToolsModule = FModuleManager::Get().LoadModuleChecked<FAssetToolsModule>("AssetTools");
+
+	// Create Asset and Factory
+	UMaterialInstanceConstantFactoryNew* Factory = NewObject<UMaterialInstanceConstantFactoryNew>();
+	UObject* CreatedAsset = AssetToolsModule.Get().CreateAsset(InMaterialName, Path, UMaterialInstanceConstant::StaticClass(), Factory);
+
+	if (UMaterialInstanceConstant* MaterialInstance = Cast<UMaterialInstanceConstant>(CreatedAsset))
+	{
+		MaterialInstance->SetParentEditorOnly(CreatedMaterial);
+
+		MaterialInstance->PostEditChange();
+		CreatedMaterial->PostEditChange();
+
+		return MaterialInstance;
+	}
+	
+	return nullptr;
 }
