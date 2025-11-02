@@ -17,6 +17,39 @@ enum class EDuplicationAxis : uint8
 	Max			UMETA(DisplayName = "Max")
 };
 
+USTRUCT(BlueprintType)
+struct FRandomActorRotation
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bRotateYaw = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = bRotateYaw))
+	float YawMinRotation = 45.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = bRotateYaw))
+	float YawMaxRotation = 180.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bRotateRoll = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = bRotateYaw))
+	float RollMinRotation = 45.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = bRotateYaw))
+	float RollMaxRotation = 180.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bRotatePitch = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = bRotateYaw))
+	float PitchMinRotation = 45.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = bRotateYaw))
+	float PitchMaxRotation = 180.0f;
+};
+
 /**
  * 
  */
@@ -31,11 +64,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SelectAllActorsWithSimilarName();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActorBatchSelection")
-	TEnumAsByte<ESearchCase::Type> SearchCase = ESearchCase::IgnoreCase;
+	UFUNCTION(BlueprintCallable)
+	void RandomizeActorRotation();
 
 	UFUNCTION(BlueprintCallable)
 	void DuplicateActors();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActorBatchSelection")
+	TEnumAsByte<ESearchCase::Type> SearchCase = ESearchCase::IgnoreCase;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActorDuplication")
 	EDuplicationAxis DuplicationAxis = EDuplicationAxis::XAxis;
@@ -44,7 +80,10 @@ public:
 	float OffsetDistance = 300.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActorDuplication")
-	int32 NumberOfDuplicates = 3;	
+	int32 NumberOfDuplicates = 3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActorRotation")
+	FRandomActorRotation RandomRotation;
 
 private:
 UPROPERTY()

@@ -66,6 +66,63 @@ void UQuickActorActionWidget::SelectAllActorsWithSimilarName()
 	}
 }
 
+void UQuickActorActionWidget::RandomizeActorRotation()
+{
+	if (!RandomRotation.bRotateYaw && !RandomRotation.bRotatePitch && !RandomRotation.bRotateRoll)
+	{
+		DebugHelper::ShowNotification(TEXT("Enable at least one rotation axis."));
+		return;
+	}
+	
+	if (!GetEditorActorSubsystem())
+	{
+		return;
+	}
+
+	TArray<AActor*> SelectedActors = EditorActorSubsystem->GetSelectedLevelActors();
+
+	if (SelectedActors.IsEmpty())
+	{
+		DebugHelper::ShowNotification(TEXT("No Actors Selected"));
+		return;
+	}
+
+	int32 Counter = 0;
+
+	for (const auto& Actor : SelectedActors)
+	{
+		if (!IsValid(Actor)) continue;
+
+		if (RandomRotation.bRotateYaw)
+		{
+			const float RandomYaw = FMath::RandRange(RandomRotation.YawMinRotation, RandomRotation.YawMaxRotation);
+			Actor->AddActorWorldRotation(FRotator(0.0f, RandomYaw, 0.0f));
+		}
+
+		if (RandomRotation.bRotatePitch)
+		{
+			const float RandomPitch = FMath::RandRange(RandomRotation.PitchMinRotation, RandomRotation.PitchMaxRotation);
+			Actor->AddActorWorldRotation(FRotator(RandomPitch, 0.0f, 0.0f));
+		}
+
+		if (RandomRotation.bRotateRoll)
+		{
+			const float RandomRoll = FMath::RandRange(RandomRotation.RollMinRotation, RandomRotation.RollMaxRotation);
+			Actor->AddActorWorldRotation(FRotator(0.0f, 0.0f, RandomRoll));
+		}
+
+		if (RandomRotation.bRotateYaw || RandomRotation.bRotatePitch || RandomRotation.bRotateRoll)
+		{
+			Counter++;
+		}
+	}
+
+	if (Counter > 0)
+	{
+		DebugHelper::ShowNotification(TEXT("Successfully rotated ") + FString::FromInt(Counter) + TEXT(" actors"));
+	}
+}
+
 void UQuickActorActionWidget::DuplicateActors()
 {
 	if (!GetEditorActorSubsystem())
