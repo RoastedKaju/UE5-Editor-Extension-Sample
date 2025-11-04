@@ -20,7 +20,8 @@ public class EditorToolbarSample : ModuleRules
                 "Engine",
                 "Slate",
                 "SlateCore",
-                "ToolMenus"
+                "ToolMenus",
+                "NetCore"
             }
         );
     }
