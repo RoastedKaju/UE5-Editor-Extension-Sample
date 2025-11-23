@@ -10,6 +10,7 @@
 #include "AssetRegistry/AssetRegistryModule.h"
 #include "SlateWidgets/AdvancedDeletionWidget.h"
 #include "Styles/ExtendEditorManagerStyle.h"
+#include "LevelEditor.h"
 
 #define LOCTEXT_NAMESPACE "FExtendEditorManagerModule"
 
@@ -19,6 +20,8 @@ void FExtendEditorManagerModule::StartupModule()
 	RegisterAdvancedDeletionEditorTab();
 
 	FExtendEditorManagerStyle::InitializeIcons();
+
+	InitLevelActorMenuExtension();
 }
 
 void FExtendEditorManagerModule::ShutdownModule()
@@ -298,6 +301,56 @@ TArray<TSharedPtr<FAssetData>> FExtendEditorManagerModule::GetAllAssetDataInSele
 	}
 
 	return AvailableAssetsData;
+}
+
+void FExtendEditorManagerModule::InitLevelActorMenuExtension()
+{
+	FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
+
+	auto& LevelEditorMenuExtenders = LevelEditorModule.GetAllLevelViewportContextMenuExtenders();
+
+	LevelEditorMenuExtenders.Add(FLevelEditorModule::FLevelViewportMenuExtender_SelectedActors::CreateRaw(this, &FExtendEditorManagerModule::CustomLevelEditorMenuExtender));
+}
+
+TSharedRef<FExtender> FExtendEditorManagerModule::CustomLevelEditorMenuExtender(const TSharedRef<FUICommandList> UICommandList, const TArray<AActor*> SelectedActors)
+{
+	TSharedRef<FExtender> MenuExtender = MakeShareable(new FExtender());
+
+	if (!SelectedActors.IsEmpty())
+	{
+		MenuExtender->AddMenuExtension(
+			FName("ActorOptions"),
+			EExtensionHook::Before,
+			UICommandList,
+			FMenuExtensionDelegate::CreateRaw(this, &FExtendEditorManagerModule::AddLevelEditorMenuEntry));
+	}
+
+	return MenuExtender;
+}
+
+void FExtendEditorManagerModule::AddLevelEditorMenuEntry(FMenuBuilder& MenuBuilder)
+{
+	MenuBuilder.AddMenuEntry(
+		FText::FromString("Lock Actor Selection"),
+		FText::FromString("Prevent Actor from being selected"),
+		FSlateIcon(),
+		FExecuteAction::CreateRaw(this, &FExtendEditorManagerModule::OnLockActorSelectionButtonClicked));
+
+	MenuBuilder.AddMenuEntry(
+		FText::FromString("Unlock All Actors Selection"),
+		FText::FromString("Prevent Actor from being selected"),
+		FSlateIcon(),
+		FExecuteAction::CreateRaw(this, &FExtendEditorManagerModule::OnUnlockAllActorsSelectionButtonClicked));
+}
+
+void FExtendEditorManagerModule::OnLockActorSelectionButtonClicked()
+{
+	DebugHelper::ShowNotification(TEXT("Locked"));
+}
+
+void FExtendEditorManagerModule::OnUnlockAllActorsSelectionButtonClicked()
+{
+	DebugHelper::ShowNotification(TEXT("Unlocked"));
 }
 
 bool FExtendEditorManagerModule::RequestDeleteAsset(const FAssetData& AssetData) const

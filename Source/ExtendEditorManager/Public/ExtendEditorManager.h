@@ -30,6 +30,13 @@ private:
 	TSharedRef<SDockTab> OnSpawnAdvancedDeletionEditorTab(const FSpawnTabArgs& SpawnTabArgs);
 	TArray<TSharedPtr<FAssetData>> GetAllAssetDataInSelectedFolder();
 
+	// Level Viewport Context Extenders
+	void InitLevelActorMenuExtension();
+	TSharedRef<FExtender> CustomLevelEditorMenuExtender(const TSharedRef<FUICommandList> UICommandList, const TArray<AActor*> SelectedActors);
+	void AddLevelEditorMenuEntry(FMenuBuilder& MenuBuilder);
+	void OnLockActorSelectionButtonClicked();
+	void OnUnlockAllActorsSelectionButtonClicked();
+	
 public:
 	bool RequestDeleteAsset(const FAssetData& AssetData) const;
 	bool RequestMultipleDeleteAssets(const TArray<FAssetData>& Assets) const;
