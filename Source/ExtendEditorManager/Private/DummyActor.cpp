@@ -29,19 +29,18 @@ void ADummyActor::BeginPlay()
 	{
 		FTimerHandle TimerHandle;
 		GetWorldTimerManager().SetTimer(TimerHandle,
-			[this]()
-			{
-				++ReplicatedNumberOldWay;
-				++ReplicatedNumberOldWayCallback;
+		                                [this]()
+		                                {
+			                                ++ReplicatedNumberOldWay;
+			                                ++ReplicatedNumberOldWayCallback;
 
-				// New way replication using push model
-				SetReplicatedNumberNewWay(25);
-			},
-			5.0f,
-			false,
-			5.0f);
+			                                // New way replication using push model
+			                                SetReplicatedNumberNewWay(25);
+		                                },
+		                                5.0f,
+		                                false,
+		                                5.0f);
 	}
-	
 }
 
 // Called every frame
@@ -90,4 +89,3 @@ void ADummyActor::SetReplicatedNumberNewWay(int32 NewValue)
 		MARK_PROPERTY_DIRTY_FROM_NAME(ADummyActor, ReplicatedNumberNewWayCallback, this);
 	}
 }
-

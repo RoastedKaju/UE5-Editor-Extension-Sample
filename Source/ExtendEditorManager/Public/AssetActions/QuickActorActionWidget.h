@@ -68,6 +68,9 @@ public:
 	void RandomizeActorRotation();
 
 	UFUNCTION(BlueprintCallable)
+	void RandomizeActorOffsetAndScale();
+
+	UFUNCTION(BlueprintCallable)
 	void DuplicateActors();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActorBatchSelection")
@@ -84,6 +87,24 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActorRotation")
 	FRandomActorRotation RandomRotation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActorRandomization")
+	bool bRandomizeScale = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActorRandomization", meta = (EditCondition = bRandomizeScale))
+	float MinScale = 0.8f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActorRandomization", meta = (EditCondition = bRandomizeScale))
+	float MaxScale = 1.8f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActorRandomization")
+	bool bRandomizeOffset = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActorRandomization", meta = (EditCondition = bRandomizeOffset))
+	float OffsetMin = -50.0f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ActorRandomization", meta = (EditCondition = bRandomizeOffset))
+	float OffsetMax = 50.0f;
 
 private:
 UPROPERTY()

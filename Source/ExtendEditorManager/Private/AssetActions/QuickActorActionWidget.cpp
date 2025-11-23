@@ -123,6 +123,50 @@ void UQuickActorActionWidget::RandomizeActorRotation()
 	}
 }
 
+void UQuickActorActionWidget::RandomizeActorOffsetAndScale()
+{
+	if (!bRandomizeOffset && !bRandomizeScale)
+	{
+		DebugHelper::ShowNotification(TEXT("Enable at least one condition."));
+		return;
+	}
+
+	if (!GetEditorActorSubsystem()) return;
+
+	TArray<AActor*> SelectedActors = EditorActorSubsystem->GetSelectedLevelActors();
+
+	if (SelectedActors.IsEmpty())
+	{
+		DebugHelper::ShowNotification(TEXT("No Actors Selected"));
+		return;
+	}
+
+	int32 Counter = 0;
+
+	for (const auto& Actor : SelectedActors)
+	{
+		if (!IsValid(Actor)) continue;
+
+		if (bRandomizeScale)
+		{
+			Actor->SetActorScale3D(FVector(FMath::RandRange(MinScale, MaxScale)));
+		}
+
+		if (bRandomizeOffset)
+		{
+			const float RandomOffset = FMath::RandRange(OffsetMin, OffsetMax);
+			Actor->AddActorWorldOffset(FVector(RandomOffset, RandomOffset, 0.0f));
+		}
+
+		Counter++;
+	}
+
+	if (Counter > 0)
+	{
+		DebugHelper::ShowNotification(TEXT("Randomized ") + FString::FromInt(Counter) + TEXT(" actors"));
+	}
+}
+
 void UQuickActorActionWidget::DuplicateActors()
 {
 	if (!GetEditorActorSubsystem())
