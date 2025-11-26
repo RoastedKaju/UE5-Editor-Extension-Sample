@@ -11,6 +11,7 @@
 #include "SlateWidgets/AdvancedDeletionWidget.h"
 #include "Styles/ExtendEditorManagerStyle.h"
 #include "LevelEditor.h"
+#include "Engine/Selection.h"
 
 #define LOCTEXT_NAMESPACE "FExtendEditorManagerModule"
 
@@ -22,6 +23,8 @@ void FExtendEditorManagerModule::StartupModule()
 	FExtendEditorManagerStyle::InitializeIcons();
 
 	InitLevelActorMenuExtension();
+
+	InitCustomSelectionEvent();
 }
 
 void FExtendEditorManagerModule::ShutdownModule()
@@ -351,6 +354,21 @@ void FExtendEditorManagerModule::OnLockActorSelectionButtonClicked()
 void FExtendEditorManagerModule::OnUnlockAllActorsSelectionButtonClicked()
 {
 	DebugHelper::ShowNotification(TEXT("Unlocked"));
+}
+
+void FExtendEditorManagerModule::InitCustomSelectionEvent()
+{
+	USelection* UserSelection = GEditor->GetSelectedActors();
+
+	UserSelection->SelectObjectEvent.AddRaw(this, &FExtendEditorManagerModule::OnActorSelected);
+}
+
+void FExtendEditorManagerModule::OnActorSelected(UObject* SelectedObject)
+{
+	if (AActor* SelectedActor = Cast<AActor>(SelectedObject))
+	{
+		DebugHelper::ShowNotification(TEXT("Selected Actor ") + SelectedActor->GetActorLabel());
+	}
 }
 
 bool FExtendEditorManagerModule::RequestDeleteAsset(const FAssetData& AssetData) const

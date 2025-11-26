@@ -36,6 +36,10 @@ private:
 	void AddLevelEditorMenuEntry(FMenuBuilder& MenuBuilder);
 	void OnLockActorSelectionButtonClicked();
 	void OnUnlockAllActorsSelectionButtonClicked();
+
+	// Actor Selection
+	void InitCustomSelectionEvent();
+	void OnActorSelected(UObject* SelectedObject);
 	
 public:
 	bool RequestDeleteAsset(const FAssetData& AssetData) const;
