@@ -48,6 +48,13 @@ private:
 	TWeakObjectPtr<class UEditorActorSubsystem> WeakEditorActorSubsystem;
 	bool GetEditorActorSubsystem();
 
+	// Hotkeys
+	TSharedPtr<class FUICommandList> CustomUICommands;
+
+	void InitCustomUICommands();
+	void OnSelectionLockHotkeyPressed();
+	void OnSelectionUnlockHotkeyPressed();
+
 public:
 	bool RequestDeleteAsset(const FAssetData& AssetData) const;
 	bool RequestMultipleDeleteAssets(const TArray<FAssetData>& Assets) const;

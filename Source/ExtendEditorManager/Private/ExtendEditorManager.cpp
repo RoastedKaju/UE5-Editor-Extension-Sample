@@ -13,6 +13,7 @@
 #include "LevelEditor.h"
 #include "Engine/Selection.h"
 #include "Subsystems/EditorActorSubsystem.h"
+#include "Commands/ExtendEditorUICommands.h"
 
 #define LOCTEXT_NAMESPACE "FExtendEditorManagerModule"
 
@@ -22,6 +23,9 @@ void FExtendEditorManagerModule::StartupModule()
 	RegisterAdvancedDeletionEditorTab();
 
 	FExtendEditorManagerStyle::InitializeIcons();
+
+	FExtendEditorUICommands::Register();
+	InitCustomUICommands();
 
 	InitLevelActorMenuExtension();
 
@@ -311,6 +315,10 @@ void FExtendEditorManagerModule::InitLevelActorMenuExtension()
 {
 	FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
 
+	// Hot keys
+	TSharedRef<FUICommandList> ExistingLevelCommands = LevelEditorModule.GetGlobalLevelEditorActions();
+	ExistingLevelCommands->Append(CustomUICommands.ToSharedRef());
+
 	auto& LevelEditorMenuExtenders = LevelEditorModule.GetAllLevelViewportContextMenuExtenders();
 
 	LevelEditorMenuExtenders.Add(FLevelEditorModule::FLevelViewportMenuExtender_SelectedActors::CreateRaw(this, &FExtendEditorManagerModule::CustomLevelEditorMenuExtender));
@@ -442,6 +450,24 @@ bool FExtendEditorManagerModule::GetEditorActorSubsystem()
 	}
 
 	return WeakEditorActorSubsystem.IsValid();
+}
+
+void FExtendEditorManagerModule::InitCustomUICommands()
+{
+	CustomUICommands = MakeShareable(new FUICommandList());
+
+	CustomUICommands->MapAction(FExtendEditorUICommands::Get().LockActorSelection, FExecuteAction::CreateRaw(this, &FExtendEditorManagerModule::OnSelectionLockHotkeyPressed));
+	CustomUICommands->MapAction(FExtendEditorUICommands::Get().UnlockActorSelection, FExecuteAction::CreateRaw(this, &FExtendEditorManagerModule::OnUnlockAllActorsSelectionButtonClicked));
+}
+
+void FExtendEditorManagerModule::OnSelectionLockHotkeyPressed()
+{
+	OnLockActorSelectionButtonClicked();
+}
+
+void FExtendEditorManagerModule::OnSelectionUnlockHotkeyPressed()
+{
+	OnUnlockAllActorsSelectionButtonClicked();
 }
 
 bool FExtendEditorManagerModule::RequestDeleteAsset(const FAssetData& AssetData) const
