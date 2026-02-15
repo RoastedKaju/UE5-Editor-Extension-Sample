@@ -12,6 +12,7 @@
 #include "Styles/ExtendEditorManagerStyle.h"
 #include "LevelEditor.h"
 #include "Engine/Selection.h"
+#include "Subsystems/EditorActorSubsystem.h"
 
 #define LOCTEXT_NAMESPACE "FExtendEditorManagerModule"
 
@@ -336,24 +337,50 @@ void FExtendEditorManagerModule::AddLevelEditorMenuEntry(FMenuBuilder& MenuBuild
 	MenuBuilder.AddMenuEntry(
 		FText::FromString("Lock Actor Selection"),
 		FText::FromString("Prevent Actor from being selected"),
-		FSlateIcon(),
+		FSlateIcon(FExtendEditorManagerStyle::GetStyleName(), "LevelEditor.LockSelection"),
 		FExecuteAction::CreateRaw(this, &FExtendEditorManagerModule::OnLockActorSelectionButtonClicked));
 
 	MenuBuilder.AddMenuEntry(
 		FText::FromString("Unlock All Actors Selection"),
 		FText::FromString("Prevent Actor from being selected"),
-		FSlateIcon(),
+		FSlateIcon(FExtendEditorManagerStyle::GetStyleName(), "LevelEditor.UnlockSelection"),
 		FExecuteAction::CreateRaw(this, &FExtendEditorManagerModule::OnUnlockAllActorsSelectionButtonClicked));
 }
 
 void FExtendEditorManagerModule::OnLockActorSelectionButtonClicked()
 {
-	DebugHelper::ShowNotification(TEXT("Locked"));
+	if (!GetEditorActorSubsystem()) return;
+
+	TArray<AActor*> SelectedActors = WeakEditorActorSubsystem->GetSelectedLevelActors();
+	if (SelectedActors.IsEmpty())
+		return;
+
+	for (AActor* SelectedActor : SelectedActors)
+	{
+		if (!IsValid(SelectedActor))
+			continue;
+
+		LockActorSelection(SelectedActor);
+		WeakEditorActorSubsystem->SetActorSelectionState(SelectedActor, false);
+	}
 }
 
 void FExtendEditorManagerModule::OnUnlockAllActorsSelectionButtonClicked()
 {
-	DebugHelper::ShowNotification(TEXT("Unlocked"));
+	if (!GetEditorActorSubsystem()) return;
+
+	TArray<AActor*> AllLevelActors = WeakEditorActorSubsystem->GetAllLevelActors();
+	if (AllLevelActors.IsEmpty()) return;
+
+	for (AActor* Actor : AllLevelActors)
+	{
+		if (!IsValid(Actor)) continue;
+
+		if (CheckIsActorSelectionLocked(Actor))
+		{
+			UnlockActorSelection(Actor);
+		}
+	}
 }
 
 void FExtendEditorManagerModule::InitCustomSelectionEvent()
@@ -365,10 +392,56 @@ void FExtendEditorManagerModule::InitCustomSelectionEvent()
 
 void FExtendEditorManagerModule::OnActorSelected(UObject* SelectedObject)
 {
+	if (!GetEditorActorSubsystem())
+	{
+		return;
+	}
+
 	if (AActor* SelectedActor = Cast<AActor>(SelectedObject))
 	{
-		DebugHelper::ShowNotification(TEXT("Selected Actor ") + SelectedActor->GetActorLabel());
+		if (CheckIsActorSelectionLocked(SelectedActor))
+		{
+			WeakEditorActorSubsystem->SetActorSelectionState(SelectedActor, false);
+		}
 	}
+}
+
+void FExtendEditorManagerModule::LockActorSelection(AActor* ActorToProcess)
+{
+	if (ActorToProcess == nullptr) return;
+
+	if (!ActorToProcess->ActorHasTag(FName("Locked")))
+	{
+		ActorToProcess->Tags.Add(FName("Locked"));
+	}
+}
+
+void FExtendEditorManagerModule::UnlockActorSelection(AActor* ActorToProcess)
+{
+	if (ActorToProcess == nullptr) return;
+
+	if (ActorToProcess->ActorHasTag(FName("Locked")))
+	{
+		ActorToProcess->Tags.Remove(FName("Locked"));
+	}
+}
+
+bool FExtendEditorManagerModule::CheckIsActorSelectionLocked(AActor* ActorToProcess)
+{
+	if (ActorToProcess == nullptr)
+		return false;
+
+	return ActorToProcess->ActorHasTag(FName("Locked"));
+}
+
+bool FExtendEditorManagerModule::GetEditorActorSubsystem()
+{
+	if (!WeakEditorActorSubsystem.IsValid())
+	{
+		WeakEditorActorSubsystem = GEditor->GetEditorSubsystem<UEditorActorSubsystem>();
+	}
+
+	return WeakEditorActorSubsystem.IsValid();
 }
 
 bool FExtendEditorManagerModule::RequestDeleteAsset(const FAssetData& AssetData) const

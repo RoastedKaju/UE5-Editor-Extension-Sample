@@ -40,7 +40,14 @@ private:
 	// Actor Selection
 	void InitCustomSelectionEvent();
 	void OnActorSelected(UObject* SelectedObject);
-	
+
+	void LockActorSelection(AActor* ActorToProcess);
+	void UnlockActorSelection(AActor* ActorToProcess);
+	bool CheckIsActorSelectionLocked(AActor* ActorToProcess);
+
+	TWeakObjectPtr<class UEditorActorSubsystem> WeakEditorActorSubsystem;
+	bool GetEditorActorSubsystem();
+
 public:
 	bool RequestDeleteAsset(const FAssetData& AssetData) const;
 	bool RequestMultipleDeleteAssets(const TArray<FAssetData>& Assets) const;

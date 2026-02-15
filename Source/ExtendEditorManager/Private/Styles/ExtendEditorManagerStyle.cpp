@@ -32,11 +32,13 @@ TSharedRef<FSlateStyleSet> FExtendEditorManagerStyle::CreateSlateStyleSet()
 
 	const FString IconDirectory = IPluginManager::Get().FindPlugin(TEXT("ExtendEditorManager"))->GetBaseDir() / "Resources";
 	CustomStyleSet->SetContentRoot(IconDirectory);
-	
+
 	const FVector2D IconSize = FVector2D(16.0f, 16.0f);
-	CustomStyleSet->Set("ContentBrowser.DeleteUnusedAssets", new FSlateImageBrush(IconDirectory/"Bin.png", IconSize));
-	CustomStyleSet->Set("ContentBrowser.DeleteEmptyFolders", new FSlateImageBrush(IconDirectory/"FolderFlames.png", IconSize));
-	CustomStyleSet->Set("ContentBrowser.AdvanceDelete", new FSlateImageBrush(IconDirectory/"AdvanceDelete.png", IconSize));
-	
+	CustomStyleSet->Set("ContentBrowser.DeleteUnusedAssets", new FSlateImageBrush(IconDirectory / "Bin.png", IconSize));
+	CustomStyleSet->Set("ContentBrowser.DeleteEmptyFolders", new FSlateImageBrush(IconDirectory / "FolderFlames.png", IconSize));
+	CustomStyleSet->Set("ContentBrowser.AdvanceDelete", new FSlateImageBrush(IconDirectory / "AdvanceDelete.png", IconSize));
+	CustomStyleSet->Set("LevelEditor.LockSelection", new FSlateImageBrush(IconDirectory / "Lock.png", IconSize));
+	CustomStyleSet->Set("LevelEditor.UnlockSelection", new FSlateImageBrush(IconDirectory / "Unlock.png", IconSize));
+
 	return CustomStyleSet;
 }
