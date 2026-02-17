@@ -55,6 +55,10 @@ private:
 	void OnSelectionLockHotkeyPressed();
 	void OnSelectionUnlockHotkeyPressed();
 
+	// Outliner extension
+	void InitSceneOutlinerExtension();
+	TSharedRef<class ISceneOutlinerColumn> OnCreateSceneOutlinerColumn(class ISceneOutliner& SceneOutliner);
+
 public:
 	bool RequestDeleteAsset(const FAssetData& AssetData) const;
 	bool RequestMultipleDeleteAssets(const TArray<FAssetData>& Assets) const;

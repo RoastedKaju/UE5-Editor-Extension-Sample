@@ -18,4 +18,5 @@ private:
 
 public:
 	static FName GetStyleName() { return StyleSetName; };
+	static TSharedRef<FSlateStyleSet> GetCreatedStyleSet() { return CreatedSlateStyle.ToSharedRef(); }
 };

@@ -14,6 +14,8 @@
 #include "Engine/Selection.h"
 #include "Subsystems/EditorActorSubsystem.h"
 #include "Commands/ExtendEditorUICommands.h"
+#include "SceneOutlinerModule.h"
+#include "Outliner/OutlinerSelectionColumn.h"
 
 #define LOCTEXT_NAMESPACE "FExtendEditorManagerModule"
 
@@ -30,6 +32,8 @@ void FExtendEditorManagerModule::StartupModule()
 	InitLevelActorMenuExtension();
 
 	InitCustomSelectionEvent();
+
+	InitSceneOutlinerExtension();
 }
 
 void FExtendEditorManagerModule::ShutdownModule()
@@ -468,6 +472,23 @@ void FExtendEditorManagerModule::OnSelectionLockHotkeyPressed()
 void FExtendEditorManagerModule::OnSelectionUnlockHotkeyPressed()
 {
 	OnUnlockAllActorsSelectionButtonClicked();
+}
+
+void FExtendEditorManagerModule::InitSceneOutlinerExtension()
+{
+	FSceneOutlinerModule& SceneOutlinerModule = FModuleManager::LoadModuleChecked<FSceneOutlinerModule>(TEXT("SceneOutliner"));
+	FSceneOutlinerColumnInfo SelectionLockColumnInfo(
+		ESceneOutlinerColumnVisibility::Visible,
+		1,
+		FCreateSceneOutlinerColumn::CreateRaw(this, &FExtendEditorManagerModule::OnCreateSceneOutlinerColumn)
+		);
+
+	SceneOutlinerModule.RegisterDefaultColumnType<FOutlinerSelectionLockColumn>(SelectionLockColumnInfo);
+}
+
+TSharedRef<ISceneOutlinerColumn> FExtendEditorManagerModule::OnCreateSceneOutlinerColumn(ISceneOutliner& SceneOutliner)
+{
+	return MakeShareable(new FOutlinerSelectionLockColumn(SceneOutliner));
 }
 
 bool FExtendEditorManagerModule::RequestDeleteAsset(const FAssetData& AssetData) const

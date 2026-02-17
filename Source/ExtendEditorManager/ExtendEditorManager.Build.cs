@@ -32,7 +32,8 @@ public class ExtendEditorManager : ModuleRules
 				"AssetTools",
 				"ContentBrowser",
 				"Projects",
-				"NetCore"
+				"NetCore",
+				"SceneOutliner"
 			}
 			);
 	}
