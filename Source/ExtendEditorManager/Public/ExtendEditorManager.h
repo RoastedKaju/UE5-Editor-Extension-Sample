@@ -43,8 +43,10 @@ private:
 
 	void LockActorSelection(AActor* ActorToProcess);
 	void UnlockActorSelection(AActor* ActorToProcess);
+public:
 	bool CheckIsActorSelectionLocked(AActor* ActorToProcess);
-
+	void ProcessLockingForOutliner(AActor* ActorToProcess, bool LockState);
+private:
 	TWeakObjectPtr<class UEditorActorSubsystem> WeakEditorActorSubsystem;
 	bool GetEditorActorSubsystem();
 
@@ -58,6 +60,7 @@ private:
 	// Outliner extension
 	void InitSceneOutlinerExtension();
 	TSharedRef<class ISceneOutlinerColumn> OnCreateSceneOutlinerColumn(class ISceneOutliner& SceneOutliner);
+	void RefreshSceneOutliner();
 
 public:
 	bool RequestDeleteAsset(const FAssetData& AssetData) const;

@@ -16,6 +16,7 @@
 #include "Commands/ExtendEditorUICommands.h"
 #include "SceneOutlinerModule.h"
 #include "Outliner/OutlinerSelectionColumn.h"
+#include "SSceneOutliner.h"
 
 #define LOCTEXT_NAMESPACE "FExtendEditorManagerModule"
 
@@ -375,6 +376,8 @@ void FExtendEditorManagerModule::OnLockActorSelectionButtonClicked()
 		LockActorSelection(SelectedActor);
 		WeakEditorActorSubsystem->SetActorSelectionState(SelectedActor, false);
 	}
+
+	RefreshSceneOutliner();
 }
 
 void FExtendEditorManagerModule::OnUnlockAllActorsSelectionButtonClicked()
@@ -393,6 +396,8 @@ void FExtendEditorManagerModule::OnUnlockAllActorsSelectionButtonClicked()
 			UnlockActorSelection(Actor);
 		}
 	}
+
+	RefreshSceneOutliner();
 }
 
 void FExtendEditorManagerModule::InitCustomSelectionEvent()
@@ -446,6 +451,22 @@ bool FExtendEditorManagerModule::CheckIsActorSelectionLocked(AActor* ActorToProc
 	return ActorToProcess->ActorHasTag(FName("Locked"));
 }
 
+void FExtendEditorManagerModule::ProcessLockingForOutliner(AActor* ActorToProcess, bool LockState)
+{
+	if (!GetEditorActorSubsystem()) return;
+
+	if (LockState)
+	{
+		LockActorSelection(ActorToProcess);
+		WeakEditorActorSubsystem->SetActorSelectionState(ActorToProcess, true);
+	}
+	else
+	{
+		UnlockActorSelection(ActorToProcess);
+		WeakEditorActorSubsystem->SetActorSelectionState(ActorToProcess, false);
+	}
+}
+
 bool FExtendEditorManagerModule::GetEditorActorSubsystem()
 {
 	if (!WeakEditorActorSubsystem.IsValid())
@@ -481,7 +502,7 @@ void FExtendEditorManagerModule::InitSceneOutlinerExtension()
 		ESceneOutlinerColumnVisibility::Visible,
 		1,
 		FCreateSceneOutlinerColumn::CreateRaw(this, &FExtendEditorManagerModule::OnCreateSceneOutlinerColumn)
-		);
+	);
 
 	SceneOutlinerModule.RegisterDefaultColumnType<FOutlinerSelectionLockColumn>(SelectionLockColumnInfo);
 }
@@ -489,6 +510,27 @@ void FExtendEditorManagerModule::InitSceneOutlinerExtension()
 TSharedRef<ISceneOutlinerColumn> FExtendEditorManagerModule::OnCreateSceneOutlinerColumn(ISceneOutliner& SceneOutliner)
 {
 	return MakeShareable(new FOutlinerSelectionLockColumn(SceneOutliner));
+}
+
+void FExtendEditorManagerModule::RefreshSceneOutliner()
+{
+	FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
+
+	auto SceneOutliners = LevelEditorModule.GetFirstLevelEditor()->GetAllSceneOutliners();
+
+	for (const TWeakPtr<ISceneOutliner>& WeakOutliner : SceneOutliners)
+	{
+		TSharedPtr<ISceneOutliner> Outliner = WeakOutliner.Pin();
+		if (!Outliner.IsValid())
+			continue;
+
+		TSharedPtr<SSceneOutliner> SceneOutliner = StaticCastSharedPtr<SSceneOutliner>(Outliner);
+
+		if (SceneOutliner.IsValid())
+		{
+			SceneOutliner->FullRefresh();
+		}
+	}
 }
 
 bool FExtendEditorManagerModule::RequestDeleteAsset(const FAssetData& AssetData) const
