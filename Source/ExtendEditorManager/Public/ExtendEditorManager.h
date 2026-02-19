@@ -59,6 +59,7 @@ private:
 
 	// Outliner extension
 	void InitSceneOutlinerExtension();
+	void UnregisterOutlinerExtension();
 	TSharedRef<class ISceneOutlinerColumn> OnCreateSceneOutlinerColumn(class ISceneOutliner& SceneOutliner);
 	void RefreshSceneOutliner();
 

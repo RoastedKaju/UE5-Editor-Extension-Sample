@@ -44,6 +44,10 @@ void FExtendEditorManagerModule::ShutdownModule()
 	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(FName("AdvancedDeletion"));
 
 	FExtendEditorManagerStyle::Shutdown();
+
+	FExtendEditorUICommands::Unregister();
+
+	UnregisterOutlinerExtension();
 }
 
 void FExtendEditorManagerModule::InitContentBrowserExtension()
@@ -505,6 +509,12 @@ void FExtendEditorManagerModule::InitSceneOutlinerExtension()
 	);
 
 	SceneOutlinerModule.RegisterDefaultColumnType<FOutlinerSelectionLockColumn>(SelectionLockColumnInfo);
+}
+
+void FExtendEditorManagerModule::UnregisterOutlinerExtension()
+{
+	FSceneOutlinerModule& SceneOutlinerModule = FModuleManager::LoadModuleChecked<FSceneOutlinerModule>(TEXT("SceneOutliner"));
+	SceneOutlinerModule.UnRegisterColumnType<FOutlinerSelectionLockColumn>();
 }
 
 TSharedRef<ISceneOutlinerColumn> FExtendEditorManagerModule::OnCreateSceneOutlinerColumn(ISceneOutliner& SceneOutliner)
