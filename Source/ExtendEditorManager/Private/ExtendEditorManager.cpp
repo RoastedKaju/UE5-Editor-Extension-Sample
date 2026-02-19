@@ -277,6 +277,8 @@ void FExtendEditorManagerModule::RegisterAdvancedDeletionEditorTab()
 
 TSharedRef<SDockTab> FExtendEditorManagerModule::OnSpawnAdvancedDeletionEditorTab(const FSpawnTabArgs& SpawnTabArgs)
 {
+	if (FolderPaths.IsEmpty()) return SNew(SDockTab).TabRole(NomadTab);
+	
 	return SNew(SDockTab).TabRole(NomadTab)
 		[
 			SNew(SAdvancedDeletionWidget)
